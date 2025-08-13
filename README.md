@@ -18,7 +18,20 @@ QuickBite is a full-stack MERN application that enables users to browse foods, a
 - stripe API Integration
 
 ---
+ADMIN ACCESS
 
 Admin deployed URL : https://quickbite-adminapp.netlify.app/
 Admin Source code : https://github.com/kmroja/QuickBite-admin.git
 
+Stripe Test Payments (Test Mode)
+
+When testing Stripe integrations in **Test Mode**, use the following cards to simulate payments without processing real transactions:
+
+| Scenario                  | Test Card Number               | Notes                            |
+|--------------------------|--------------------------------|----------------------------------|
+| Successful Payment (US)  | `4242 4242 4242 4242`          | Use any future expiry & CVC       |
+| Visa (International)**   | See link below                 | Multiple countries supported      |
+
+**International Test Cards (Visa)**  
+Stripe provides test cards across many countries. For details, see Stripe's official documentation:  
+[Stripe International Test Cards](https://docs.stripe.com/testing#international-cards)  
