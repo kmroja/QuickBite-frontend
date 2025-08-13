@@ -25,3 +25,12 @@
 .orbit-delay-15 {
   animation: orbit 20s linear infinite -15s;
 }
+
+@keyframes bicycleMove {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-bicycle {
+  animation: bicycleMove 6s linear infinite;
+}

@@ -79,37 +79,79 @@ const About = () => {
       </section>
 
       <section className="py-16 px-4 md:px-8 relative">
-        <div className="max-w-7xl mx-auto">
-          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="text-4xl font-serif sm:text-5xl md:text-6xl font-bold text-center mb-12 text-emerald-900">
-            Meet Our <span className="text-emerald-600">Culinary Artists</span>
-          </motion.h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 lg:gap-12">
-            {teamMembers.map((m, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "0px 0px -100px 0px" }} transition={{ delay: m.delay }} className="relative group">
-                <div className="relative h-full bg-[#cfe9dc]/90 backdrop-blur-lg rounded-3xl overflow-hidden border-2 border-emerald-400/30 hover:border-emerald-500 transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/20">
-                  <div className="relative h-64 sm:h-72 md:h-96 overflow-hidden">
-                    <motion.img src={m.img} alt={m.name} className="w-full h-full object-cover" initial={{ scale: 1 }} whileHover={{ scale: 1.1 }} transition={{ duration: 0.5 }} />
-                  </div>
-                  <div className="p-8 text-center flex flex-col h-[calc(100%-24rem)]">
-                    <div className="mb-4">
-                      <h3 className="text-3xl font-bold mb-2 text-emerald-900">{m.name}</h3>
-                      <p className="text-emerald-600 text-lg font-medium font-cursive">{m.role}</p>
-                    </div>
-                    <p className="text-emerald-900/80 text-lg font-cursive flex-grow">{m.bio}</p>
-                    <motion.div className="flex justify-center gap-4 pt-6" initial={{ scale: 0 }} whileInView={{ scale: 1 }}>
-                      {Object.entries(m.social).map(([p]) => (
-                        <div key={p} className="text-emerald-500 hover:text-emerald-400 transition-colors duration-300 hover:scale-110 cursor-default">
-                          {({ twitter: <FaXTwitter className="w-6 h-6" />, instagram: <FaInstagram className="w-6 h-6" />, facebook: <FaFacebookF className="w-6 h-6" />, linkedin: <FaLinkedinIn className="w-6 h-6" /> })[p]}
-                        </div>
-                      ))}
-                    </motion.div>
-                  </div>
-                </div>
+  <div className="max-w-7xl mx-auto">
+    <motion.h2
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      className="text-4xl font-serif sm:text-5xl md:text-6xl font-bold text-center mb-12 text-emerald-900"
+    >
+      Meet Our <span className="text-emerald-600">Culinary Artists</span>
+    </motion.h2>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 lg:gap-12">
+      {teamMembers.map((m, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+          transition={{ delay: m.delay }}
+          className="relative group"
+        >
+          <div className="relative h-full bg-[#cfe9dc]/90 backdrop-blur-lg rounded-3xl overflow-hidden border-2 border-emerald-400/30 hover:border-emerald-500 transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/20">
+            <div className="relative h-64 sm:h-72 md:h-96 overflow-hidden">
+              <motion.img
+                src={m.img}
+                alt={m.name}
+                className="w-full h-full object-cover"
+                initial={{ scale: 1 }}
+                whileHover={{ scale: 1.1 }}
+                transition={{ duration: 0.5 }}
+              />
+            </div>
+
+            <div className="p-8 text-center flex flex-col h-[calc(100%-24rem)]">
+              <div className="mb-4">
+                <h3 className="text-3xl font-bold mb-2 text-emerald-900">{m.name}</h3>
+                <p className="text-emerald-600 text-lg font-medium font-cursive">{m.role}</p>
+              </div>
+
+              <p className="text-emerald-900/80 text-lg font-cursive flex-grow">{m.bio}</p>
+
+              <motion.div
+                className="flex justify-center gap-4 pt-6"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+              >
+                {Object.entries(m.social).map(([platform, url]) => {
+                  const icons = {
+                    twitter: <FaXTwitter className="w-6 h-6" />,
+                    instagram: <FaInstagram className="w-6 h-6" />,
+                    facebook: <FaFacebookF className="w-6 h-6" />,
+                    linkedin: <FaLinkedinIn className="w-6 h-6" />,
+                  };
+
+                  return (
+                    <a
+                      key={platform}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-emerald-500 hover:text-emerald-400 transition-colors duration-300 hover:scale-110"
+                    >
+                      {icons[platform]}
+                    </a>
+                  );
+                })}
               </motion.div>
-            ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+</section>
+
     </div>
   );
 };

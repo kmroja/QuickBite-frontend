@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useCart } from '../../CartContext/CartContext';
-import { FaMinus, FaPlus } from 'react-icons/fa';
+import { FaMinus, FaPlus, FaSearch } from 'react-icons/fa';
 import './Om.css';
 
 const categories = ['Breakfast', 'Lunch', 'Dinner', 'Mexican', 'Italian', 'Desserts', 'Drinks'];
@@ -9,6 +9,7 @@ const categories = ['Breakfast', 'Lunch', 'Dinner', 'Mexican', 'Italian', 'Desse
 const OurMenu = () => {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [menuData, setMenuData] = useState({});
+  const [searchQuery, setSearchQuery] = useState('');
   const { cartItems: rawCart, addToCart, updateQuantity, removeFromCart } = useCart();
 
   const cartItems = rawCart.filter(ci => ci.item);
@@ -33,119 +34,152 @@ const OurMenu = () => {
 
   // helper: find cart entry by product ID
   const getCartEntry = id => cartItems.find(ci => ci.item?._id === id);
-  const getQuantity  = id => getCartEntry(id)?.quantity ?? 0;
+  const getQuantity = id => getCartEntry(id)?.quantity ?? 0;
+
+  // search handler: match category
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const matchedCategory = categories.find(cat =>
+      cat.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    if (matchedCategory) {
+      setActiveCategory(matchedCategory);
+    }
+  };
 
   // items to display in active category
   const displayItems = (menuData[activeCategory] ?? []).slice(0, 12);
 
   return (
-  <div className="bg-gradient-to-br from-[#fefae0] via-[#e9edc9] to-[#fefae0] min-h-screen py-16 px-4 sm:px-6 lg:px-8">
-  <div className="max-w-7xl mx-auto">
-    {/* Title */}
-    <h2 className="text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-green-600 via-green-500 to-green-600">
-      <span className="font-dancingscript block text-5xl sm:text-6xl md:text-7xl mb-2">
-        Our Exquisite Menu
-      </span>
-      <span className="block text-xl sm:text-2xl md:text-3xl font-cinzel mt-4 text-green-900/80">
-        A Symphony of Flavors
-      </span>
-    </h2>
+    <div className="bg-gradient-to-br from-[#fefae0] via-[#e9edc9] to-[#fefae0] min-h-screen py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
 
-    {/* Category Tabs */}
-    <div className="flex flex-wrap justify-center gap-4 mb-16">
-      {categories.map(cat => (
-        <button
-          key={cat}
-          onClick={() => setActiveCategory(cat)}
-          className={`px-4 sm:px-6 py-2 rounded-full border-2 transition-all duration-300 transform font-cinzel text-sm sm:text-lg tracking-widest backdrop-blur-sm ${
-            activeCategory === cat
-              ? 'bg-gradient-to-br from-green-600/80 to-green-500/80 border-green-700 scale-105 shadow-xl shadow-green-700/30'
-              : 'bg-green-100/40 border-green-700/30 text-green-900/80 hover:bg-green-200/40 hover:scale-95'
-          }`}
-        >
-          {cat}
-        </button>
-      ))}
-    </div>
-
-    {/* Menu Grid */}
-    <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
-      {displayItems.map((item, i) => {
-        const cartEntry = getCartEntry(item._id);
-        const quantity  = cartEntry?.quantity || 0;
-
-        return (
-          <div
-            key={item._id}
-            className="relative bg-green-100/30 rounded-2xl overflow-hidden border border-green-800/20 backdrop-blur-sm flex flex-col transition-all duration-500"
-            style={{ '--index': i }}
-          >
-            {/* Image */}
-            <div className="relative h-48 sm:h-56 md:h-60 flex items-center justify-center bg-black/5">
-              <img
-                src={item.imageUrl || item.image}
-                alt={item.name}
-                className="max-h-full max-w-full object-contain transition-all duration-700"
-              />
+        {/* Search Bar */}
+        <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto mb-8 group">
+          <div className="relative flex items-center bg-green-900/30 rounded-xl border-2 border-lime-500/30 shadow-2xl hover:border-lime-400/50 transition-all duration-300">
+            <div className="pl-6 pr-3 py-4">
+              <FaSearch className="text-xl text-lime-300/80" />
             </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by category (e.g. Breakfast, Lunch...)"
+              className="w-full py-4 pr-6 bg-transparent outline-none placeholder-lime-200/70 text-lg font-medium tracking-wide"
+            />
+            <button
+              type="submit"
+              className="mr-4 px-6 py-3 bg-gradient-to-r from-lime-300 to-lime-200 rounded-lg font-semibold text-green-900 hover:from-lime-200 hover:to-lime-100 transition-all duration-300 shadow-lg hover:shadow-lime-300/20"
+            >
+              Search
+            </button>
+          </div>
+        </form>
 
-            {/* Details */}
-            <div className="p-4 sm:p-6 flex flex-col flex-grow">
-              <h3 className="text-xl sm:text-2xl mb-2 font-dancingscript text-green-800">
-                {item.name}
-              </h3>
-              <p className="text-green-900/80 text-xs sm:text-sm mb-4 font-cinzel leading-relaxed">
-                {item.description}
-              </p>
+        {/* Title */}
+        <h2 className="text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-green-600 via-green-500 to-green-600">
+          <span className="font-dancingscript block text-5xl sm:text-6xl md:text-7xl mb-2">
+            Our Exquisite Menu
+          </span>
+          <span className="block text-xl sm:text-2xl md:text-3xl font-cinzel mt-4 text-green-900/80">
+            A Symphony of Flavors
+          </span>
+        </h2>
 
-              {/* Price & Cart Controls */}
-              <div className="mt-auto flex items-center gap-4 justify-between">
-                <div className="bg-green-50/60 backdrop-blur-sm px-3 py-1 rounded-2xl shadow-lg">
-                  <span className="text-xl font-bold text-green-700 font-dancingscript">
-                    ₹{Number(item.price).toFixed(2)}
-                  </span>
+        {/* Category Tabs */}
+        <div className="flex flex-wrap justify-center gap-4 mb-16">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-4 sm:px-6 py-2 rounded-full border-2 transition-all duration-300 transform font-cinzel text-sm sm:text-lg tracking-widest backdrop-blur-sm ${
+                activeCategory === cat
+                  ? 'bg-gradient-to-br from-green-600/80 to-green-500/80 border-green-700 scale-105 shadow-xl shadow-green-700/30'
+                  : 'bg-green-100/40 border-green-700/30 text-green-900/80 hover:bg-green-200/40 hover:scale-95'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Menu Grid */}
+        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
+          {displayItems.map((item, i) => {
+            const cartEntry = getCartEntry(item._id);
+            const quantity = cartEntry?.quantity || 0;
+
+            return (
+              <div
+                key={item._id}
+                className="relative bg-green-100/30 rounded-2xl overflow-hidden border border-green-800/20 backdrop-blur-sm flex flex-col transition-all duration-500"
+                style={{ '--index': i }}
+              >
+                {/* Image */}
+                <div className="relative h-48 sm:h-56 md:h-60 flex items-center justify-center bg-black/5">
+                  <img
+                    src={item.imageUrl || item.image}
+                    alt={item.name}
+                    className="max-h-full max-w-full object-contain transition-all duration-700"
+                  />
                 </div>
-                <div className="flex items-center gap-2">
-                  {quantity > 0 ? (
-                    <>
-                      <button
-                        onClick={() =>
-                          quantity > 1
-                            ? updateQuantity(cartEntry?._id, quantity - 1)
-                            : removeFromCart(cartEntry._id)
-                        }
-                        className="w-8 h-8 rounded-full bg-green-200/60 flex items-center justify-center hover:bg-green-300 transition-colors"
-                      >
-                        <FaMinus className="text-green-800" />
-                      </button>
-                      <span className="w-8 text-center text-green-900">
-                        {quantity}
+
+                {/* Details */}
+                <div className="p-4 sm:p-6 flex flex-col flex-grow">
+                  <h3 className="text-xl sm:text-2xl mb-2 font-dancingscript text-green-800">
+                    {item.name}
+                  </h3>
+                  <p className="text-green-900/80 text-xs sm:text-sm mb-4 font-cinzel leading-relaxed">
+                    {item.description}
+                  </p>
+
+                  {/* Price & Cart Controls */}
+                  <div className="mt-auto flex items-center gap-4 justify-between">
+                    <div className="bg-green-50/60 backdrop-blur-sm px-3 py-1 rounded-2xl shadow-lg">
+                      <span className="text-xl font-bold text-green-700 font-dancingscript">
+                        ₹{Number(item.price).toFixed(2)}
                       </span>
-                      <button
-                        onClick={() => updateQuantity(cartEntry._id, quantity + 1)}
-                        className="w-8 h-8 rounded-full bg-green-200/60 flex items-center justify-center hover:bg-green-300 transition-colors"
-                      >
-                        <FaPlus className="text-green-800" />
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => addToCart(item, 1)}
-                      className="bg-green-200/60 px-4 py-1.5 rounded-full font-cinzel text-xs sm:text-sm uppercase tracking-widest transition-transform duration-300 hover:scale-110 hover:shadow-lg hover:shadow-green-400/20 overflow-hidden border border-green-700/30"
-                    >
-                      Add to Cart
-                    </button>
-                  )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {quantity > 0 ? (
+                        <>
+                          <button
+                            onClick={() =>
+                              quantity > 1
+                                ? updateQuantity(cartEntry?._id, quantity - 1)
+                                : removeFromCart(cartEntry._id)
+                            }
+                            className="w-8 h-8 rounded-full bg-green-200/60 flex items-center justify-center hover:bg-green-300 transition-colors"
+                          >
+                            <FaMinus className="text-green-800" />
+                          </button>
+                          <span className="w-8 text-center text-green-900">
+                            {quantity}
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(cartEntry._id, quantity + 1)}
+                            className="w-8 h-8 rounded-full bg-green-200/60 flex items-center justify-center hover:bg-green-300 transition-colors"
+                          >
+                            <FaPlus className="text-green-800" />
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => addToCart(item, 1)}
+                          className="bg-green-200/60 px-4 py-1.5 rounded-full font-cinzel text-xs sm:text-sm uppercase tracking-widest transition-transform duration-300 hover:scale-110 hover:shadow-lg hover:shadow-green-400/20 overflow-hidden border border-green-700/30"
+                        >
+                          Add to Cart
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        );
-      })}
+            );
+          })}
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
   );
 };
 

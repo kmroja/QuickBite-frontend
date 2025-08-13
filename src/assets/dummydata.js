@@ -7,9 +7,9 @@ import { GiChefToque, GiFoodTruck } from 'react-icons/gi';
 import IA1 from './IA1.png';
 import IA2 from './IA2.png';
 import IA3 from './IA3.png';
-import IA4 from './IA4.png';
-import IA5 from './IA5.png';
-import IA6 from './IA6.png';
+import IA4 from './IA4.jpeg';
+import IA5 from './IA5.jpg';
+import IA6 from './IA6.jpeg';
 
 import Kebab from "./Kebab.png";
 import ChickenTikka from "./ChickenTikka.png";
@@ -81,42 +81,42 @@ export const stats = [
 
 export const teamMembers = [
     {
-        name: "Marco Yansen",
-        role: "Executive Chef",
-        img: IA4,
-        bio: "3 Michelin stars | Italian cuisine specialist",
-        delay: 0.1,
-        social: {
-            twitter: "https://x.com/?lang=en",
-            instagram: "https://www.instagram.com/",
-            facebook: "https://www.facebook.com/",
-            linkedin: "https://www.linkedin.com/",
+        name: "Chef Damu",
+    role: "South Indian Cuisine Specialist",
+    img: IA4,
+    bio: "Guinness World Record holder, Padma Shri awardee, celebrated South Indian culinary maestro.",
+    delay: 0.1,
+    social: {
+      twitter: "https://twitter.com/chefdamu?lang=en",
+      instagram: "https://www.instagram.com/chef_damu/",
+      facebook: "https://www.facebook.com/DrChefDamodaran/",
+      linkedin: "https://www.linkedin.com/in/chefdamu",
+  },
+    },
+    {
+         name: "Madhampatty Rangaraj",
+    role: "Traditional Tamil Cuisine Expert",
+    img: IA5,
+    bio: "Renowned for authentic South Indian feasts and culinary excellence.",
+    delay: 0.3,
+    social: {
+      twitter: "https://twitter.com/madhampattyr", // placeholder
+      instagram: "https://www.instagram.com/madhampatty_rangaraj/",
+      facebook: "https://www.facebook.com/madhampattyrangaraj/", // placeholder
+      linkedin: "https://www.linkedin.com/in/madhampattyrangaraj",
         },
     },
     {
-        name: "Amit Singh",
-        role: "Pastry Chef",
-        img: IA5,
-        bio: "World Baking Champion | French desserts expert",
-        delay: 0.3,
-        social: {
-            twitter: "https://x.com/?lang=en",
-            instagram: "https://www.instagram.com/",
-            facebook: "https://www.facebook.com/",
-            linkedin: "https://www.linkedin.com/",
-        },
-    },
-    {
-        name: "Akash Trivedi",
-        role: "Sushi Chef",
-        img: IA6,
-        bio: "5th generation sushi chef | Traditional techniques",
-        delay: 0.5,
-        social: {
-            twitter: "https://x.com/?lang=en",
-            instagram: "https://www.instagram.com/",
-            facebook: "https://www.facebook.com/",
-            linkedin: "https://www.linkedin.com/",
+         name: "Koushik Shankar",
+    role: "Japanese Sushi & Ramen Specialist",
+    img: IA6,
+    bio: "Fusion cuisine innovator and judge on Cooku with Comali Season 6.",
+    delay: 0.5,
+    social: {
+      twitter: "https://twitter.com/chefkoushik", // placeholder
+      instagram: "https://www.instagram.com/themadchefindia/", // accurate from TOI profile :contentReference[oaicite:0]{index=0}
+      facebook: "https://www.facebook.com/chefkoushik/", // placeholder
+      linkedin: "https://www.linkedin.com/in/chefkoushik",
         },
     },
 ];
@@ -145,10 +145,10 @@ export const additionalData = [
 
 // FOOTER 
 export const socialIcons = [
-    { icon: FaFacebook, link: 'https://www.facebook.com/share/1DjbwhdR4z/', color: '#3b5998', label: 'Facebook' },
-    { icon: FaInstagram, link: 'https://www.instagram.com/hexagondigitalservices?igsh=MW1nanQ2eXIycnRkZQ==', color: '#E1306C', label: 'Instagram' },
-    { icon: FaXTwitter, link: 'https://x.com/HexagonDService?t=Vv5ReZAIbXONqkq_O0ksWQ&s=09', color: '#000', label: 'X' },
-    { icon: FaYoutube, link: 'https://youtube.com/@hexagondigitalservices?si=UnBt0AHI-ChN5Mze', color: '#FF0000', label: 'Youtube' },
+    { icon: FaFacebook, link: 'https://www.facebook.com', color: '#3b5998', label: 'Facebook' },
+    { icon: FaInstagram, link: 'https://www.instagram.com', color: '#E1306C', label: 'Instagram' },
+    { icon: FaXTwitter, link: 'https://x.com', color: '#000', label: 'X' },
+    { icon: FaYoutube, link: 'https://youtube.com', color: '#FF0000', label: 'Youtube' },
 ];
 
 // LOGIN 
