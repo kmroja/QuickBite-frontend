@@ -8,6 +8,7 @@ const VerifyPaymentPage = () => {
     const { search } = useLocation();
     const navigate = useNavigate();
     const [statusMsg, setStatusMsg] = useState('Verifying payment…');
+    const [loading, setLoading] = useState(true); // Loading state
 
     // Grab token from localStorage
     const token = localStorage.getItem('authToken');
@@ -22,10 +23,12 @@ const VerifyPaymentPage = () => {
         if (success !== 'true' || !session_id) {
             if (success === 'false') {
                 // User explicitly cancelled
-                navigate('/checkout', { replace: true });
+                setStatusMsg('Payment was cancelled.');
+                setLoading(false);
                 return;
             }
             setStatusMsg('Payment was not completed.');
+            setLoading(false);
             return;
         }
 
@@ -34,21 +37,27 @@ const VerifyPaymentPage = () => {
             params: { session_id },
             headers: authHeaders
         })
-            .then(() => {
-                // Only clear the cart on true success:
-                clearCart();
-                navigate('/myorder', { replace: true });
+            .then(response => {
+                // Check if the order was confirmed successfully
+                if (response.data) {
+                    clearCart(); // Clear the cart on successful confirmation
+                    navigate('/myorder', { replace: true });
+                } else {
+                    setStatusMsg('Payment confirmation failed.');
+                }
             })
             .catch(err => {
                 console.error('Confirmation error:', err);
                 setStatusMsg('There was an error confirming your payment.');
-                clearCart(false);
+            })
+            .finally(() => {
+                setLoading(false); // Stop loading regardless of success or failure
             });
     }, [search, clearCart, navigate, authHeaders]);
 
     return (
         <div className="min-h-screen flex items-center justify-center text-white">
-            <p>{statusMsg}</p>
+            {loading ? <p>{statusMsg}</p> : <p>{statusMsg}</p>}
         </div>
     );
 };
