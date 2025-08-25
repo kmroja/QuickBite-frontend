@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { FaRegEnvelope, FaStar } from "react-icons/fa6";
+import { FaRegEnvelope } from "react-icons/fa6";
 import { BiChevronRight } from "react-icons/bi";
 import { socialIcons } from "../../assets/dummydata";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ReviewSection from "../ReviewSection/ReviewSection";
+
+
 
 const navItems = [
   { name: "Home", link: "/" },
@@ -13,35 +16,18 @@ const navItems = [
 
 const Footer = () => {
   const [email, setEmail] = useState("");
-  const [rating, setRating] = useState(0);
-  const [hover, setHover] = useState(null);
-  const [review, setReview] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    toast.success(`Subscribed successfully!`, {
-      theme: "colored",
-    });
+    toast.success(`Subscribed successfully!`, { theme: "colored" });
     setEmail("");
-  };
-
-  const handleReviewSubmit = (e) => {
-    e.preventDefault();
-    if (rating === 0) {
-      toast.error("Please select a rating before submitting!", {
-        theme: "colored",
-      });
-      return;
-    }
-    toast.success("Feedback submitted successfully!", { theme: "colored" });
-    setReview("");
-    setRating(0);
   };
 
   return (
     <>
       <footer className="bg-[#1B3A2F] text-[#F9F7F1] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
+          {/* Top Columns */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-12">
             {/* Left Column */}
             <div className="space-y-6">
@@ -53,12 +39,12 @@ const Footer = () => {
                 <br />
                 Savor handcrafted perfection, delivered with care.
               </p>
+
+              {/* Newsletter */}
               <form onSubmit={handleSubmit} className="relative mt-4 group">
                 <div className="flex items-center gap-2 mb-2">
                   <FaRegEnvelope className="text-[#A5D6A7] animate-pulse" />
-                  <span className="font-bold text-[#A5D6A7]">
-                    Get Exclusive Offers
-                  </span>
+                  <span className="font-bold text-[#A5D6A7]">Get Exclusive Offers</span>
                 </div>
                 <div className="relative">
                   <input
@@ -105,7 +91,7 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* Right Column with Social Links */}
+            {/* Right Column Social */}
             <div className="flex justify-center md:justify-end">
               <div className="space-y-4">
                 <h3 className="text-xl font-semibold mb-4 border-l-4 border-[#A5D6A7] pl-3 font-merriweather italic text-[#A5D6A7]">
@@ -132,51 +118,10 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Rating & Review Section */}
-          <div className="border-t border-[#2E7D32]/50 pt-8 mb-8">
-            <form
-              onSubmit={handleReviewSubmit}
-              className="max-w-lg mx-auto text-center space-y-4"
-            >
-              <h3 className="text-xl font-semibold text-[#A5D6A7]">
-                Rate & Review Our Website
-              </h3>
-              <div className="flex justify-center gap-2">
-                {[...Array(5)].map((_, index) => {
-                  const starValue = index + 1;
-                  return (
-                    <FaStar
-                      key={index}
-                      size={28}
-                      className={`cursor-pointer transition-colors duration-200 ${
-                        starValue <= (hover || rating)
-                          ? "text-yellow-400"
-                          : "text-gray-400"
-                      }`}
-                      onClick={() => setRating(starValue)}
-                      onMouseEnter={() => setHover(starValue)}
-                      onMouseLeave={() => setHover(null)}
-                    />
-                  );
-                })}
-              </div>
-              <textarea
-                value={review}
-                onChange={(e) => setReview(e.target.value)}
-                placeholder="Share your experience..."
-                className="w-full p-3 rounded-lg bg-[#F9F7F1]/10 border border-[#A5D6A7]/40 focus:outline-none focus:border-[#A5D6A7] placeholder-[#F9F7F1]/50"
-                rows="3"
-              />
-              <button
-                type="submit"
-                className="bg-[#A5D6A7] text-[#1B3A2F] px-6 py-2 rounded-lg font-semibold hover:bg-green-300 transition-all duration-300"
-              >
-                Submit
-              </button>
-            </form>
-          </div>
+          {/* Reviews Section */}
+          <ReviewSection />
 
-          {/* Bottom Section */}
+          {/* Bottom */}
           <div className="border-t border-[#2E7D32]/50 pt-8 mt-8 text-center">
             <p className="text-[#A5D6A7] text-lg mb-2 font-playfair">
               © 2025 QuickBite. All rights reserved.
@@ -190,7 +135,6 @@ const Footer = () => {
         </div>
       </footer>
 
-      {/* Toast Container */}
       <ToastContainer position="bottom-center" autoClose={3000} hideProgressBar />
     </>
   );
