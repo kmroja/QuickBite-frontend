@@ -30,6 +30,7 @@ const ReviewSection = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !comment) return alert("Please fill all fields");
+
     try {
       const { data } = await axios.post(
         "https://quickbite-backend-6dvr.onrender.com/api/reviews",
@@ -75,7 +76,7 @@ const ReviewSection = () => {
           <div className="flex w-max animate-marquee gap-4">
             {[...reviews, ...reviews].map((review, idx) => (
               <div
-                key={review._id || idx}
+                key={`${review._id}-${idx}`} // ✅ unique key fix
                 className="inline-flex items-center gap-3 bg-[#2E7D32]/70 text-white px-4 py-2 rounded-full shadow-md"
               >
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#A5D6A7] text-[#1B3A2F] font-bold text-sm">
@@ -86,7 +87,7 @@ const ReviewSection = () => {
                 <span className="flex gap-0.5">
                   {[...Array(5)].map((_, i) => (
                     <StarFilled
-                      key={i}
+                      key={`star-${idx}-${i}`}
                       className={`h-4 w-4 ${
                         review.rating > i ? "text-yellow-400" : "text-gray-400"
                       }`}
@@ -155,7 +156,7 @@ const ReviewSection = () => {
             const starValue = index + 1;
             return (
               <span
-                key={index}
+                key={`rating-${index}`}
                 onClick={() => setRating(starValue)}
                 onMouseEnter={() => setHover(starValue)}
                 onMouseLeave={() => setHover(0)}
