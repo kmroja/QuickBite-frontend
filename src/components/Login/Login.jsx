@@ -23,6 +23,7 @@ const Login = ({ onLoginSuccess, onClose }) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', isError: false });
+  const [invalidEmail, setInvalidEmail] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('loginData');
@@ -37,48 +38,44 @@ const Login = ({ onLoginSuccess, onClose }) => {
       [name]: type === 'checkbox' ? checked : value,
     }));
 
-    const handleSubmit = async e => {
-      e.preventDefault();
-    
-      try {
-        const res = await axios.post(`${url}/api/user/login`, {
-          email: formData.email,
-          password: formData.password,
-        });
-        console.log('✅ axios response:', res);
-    
-        if (res.status === 200 && res.data.success && res.data.token) {
-          // Save your JWT however you prefer
-          localStorage.setItem('authToken', res.data.token);
-    
-          // Remember-me for the form
-          formData.rememberMe
-            ? localStorage.setItem('loginData', JSON.stringify(formData))
-            : localStorage.removeItem('loginData');
-    
-          setToast({ visible: true, message: 'Login successful!', isError: false });
-          setTimeout(() => {
-            setToast({ visible: false, message: '', isError: false });
-            onLoginSuccess(res.data.token);
-          }, 1500);
-    
-        } else {
-          console.warn('⚠️ Unexpected response:', res.data);
-          throw new Error(res.data.message || 'Login failed.');
-        }
-    
-      } catch (err) {
-        console.error(' axios error object:', err);
-        if (err.response) {
-          console.error(' server responded with:', err.response.status, err.response.data);
-        }
-        const msg = err.response?.data?.message || err.message || 'Login failed.';
-        setToast({ visible: true, message: msg, isError: true });
-        setTimeout(() => setToast({ visible: false, message: '', isError: false }), 2000);
+  const isValidGmail = email => /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+
+    if (!formData.email.trim() || !isValidGmail(formData.email)) {
+      setInvalidEmail(true);
+      setToast({ visible: true, message: 'Please enter a valid Gmail address!', isError: true });
+      return;
+    }
+    setInvalidEmail(false);
+
+    try {
+      const res = await axios.post(`${url}/api/user/login`, {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (res.status === 200 && res.data.success && res.data.token) {
+        localStorage.setItem('authToken', res.data.token);
+        formData.rememberMe
+          ? localStorage.setItem('loginData', JSON.stringify(formData))
+          : localStorage.removeItem('loginData');
+
+        setToast({ visible: true, message: 'Login successful!', isError: false });
+        setTimeout(() => {
+          setToast({ visible: false, message: '', isError: false });
+          onLoginSuccess(res.data.token);
+        }, 1500);
+      } else {
+        throw new Error(res.data.message || 'Login failed.');
       }
-    };
-    
-    
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Login failed.';
+      setToast({ visible: true, message: msg, isError: true });
+      setTimeout(() => setToast({ visible: false, message: '', isError: false }), 2000);
+    }
+  };
 
   return (
     <div className="space-y-6 relative">
@@ -106,7 +103,7 @@ const Login = ({ onLoginSuccess, onClose }) => {
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            className={`${inputBase} pl-10 pr-4 py-3`}
+            className={`${inputBase} pl-10 pr-4 py-3 ${invalidEmail ? 'border-2 border-red-500' : ''}`}
             required
           />
         </div>
