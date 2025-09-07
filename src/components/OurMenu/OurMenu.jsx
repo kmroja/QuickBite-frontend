@@ -4,7 +4,7 @@ import { useCart } from "../../CartContext/CartContext";
 import { FaMinus, FaPlus, FaSearch } from "react-icons/fa";
 import "./Om.css";
 
-// ⭐ Toast notification component
+// Toast notification
 const Toast = ({ message, type = "success", onClose }) => (
   <div
     className={`fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg text-white font-semibold transition-all duration-300 ${
@@ -12,16 +12,13 @@ const Toast = ({ message, type = "success", onClose }) => (
     }`}
   >
     {message}
-    <button
-      onClick={onClose}
-      className="ml-2 font-bold hover:text-gray-200"
-    >
+    <button onClick={onClose} className="ml-2 font-bold hover:text-gray-200">
       ✕
     </button>
   </div>
 );
 
-// ⭐ Modern reusable StarRating component
+// Star rating component
 const StarRating = ({ rating, onRatingChange, readOnly }) => (
   <div className="flex gap-1">
     {[1, 2, 3, 4, 5].map((star) => (
@@ -41,14 +38,12 @@ const StarRating = ({ rating, onRatingChange, readOnly }) => (
   </div>
 );
 
-// ⭐ Average rating component with safe calculation
+// Average rating display
 const AverageRatingDisplay = ({ reviews = [] }) => {
   const average = useMemo(() => {
-    if (!reviews.length) return 0;
-    const validRatings = reviews.filter(r => r && typeof r.rating === "number");
-    if (!validRatings.length) return 0;
+    if (!Array.isArray(reviews) || reviews.length === 0) return 0;
     return (
-      validRatings.reduce((a, r) => a + r.rating, 0) / validRatings.length
+      reviews.reduce((sum, r) => sum + (r?.rating || 0), 0) / reviews.length
     ).toFixed(1);
   }, [reviews]);
 
@@ -56,13 +51,13 @@ const AverageRatingDisplay = ({ reviews = [] }) => {
     <div className="flex items-center gap-2">
       <StarRating rating={Number(average)} readOnly />
       <span className="text-green-900/70 text-xs">
-        {average} ⭐ ({reviews.length})
+        {average} ⭐ ({reviews?.length || 0})
       </span>
     </div>
   );
 };
 
-// ⭐ Cart control component
+// Cart control
 const CartControl = ({ item, quantity, cartEntry, addToCart, updateQuantity, removeFromCart }) => (
   <div className="flex items-center gap-2">
     {quantity > 0 ? (
@@ -113,11 +108,10 @@ const OurMenu = () => {
   const [newReview, setNewReview] = useState({});
   const [toast, setToast] = useState(null);
 
-  const { cartItems: rawCart, addToCart, updateQuantity, removeFromCart } =
-    useCart();
+  const { cartItems: rawCart, addToCart, updateQuantity, removeFromCart } = useCart();
   const cartItems = rawCart.filter((ci) => ci.item);
 
-  // Fetch menu
+  // Fetch menu items
   useEffect(() => {
     const fetchMenu = async () => {
       try {
@@ -140,6 +134,7 @@ const OurMenu = () => {
   }, []);
 
   const getCartEntry = (id) => cartItems.find((ci) => ci.item?._id === id);
+  const getQuantity = (id) => getCartEntry(id)?.quantity ?? 0;
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -159,26 +154,21 @@ const OurMenu = () => {
       }
 
       const reviewData = newReview[itemId] || {};
-      let { rating = 0, comment = "" } = reviewData;
+      const rating = Number(reviewData.rating) || 0;
+      const comment = (reviewData.comment || "").trim();
 
-      // ✅ Validation
-      if (!rating || rating < 1 || rating > 5 || !comment.trim()) {
-        setToast({
-          message: "Please provide a rating (1–5) and a comment",
-          type: "error",
-        });
+      if (!rating || rating < 1 || rating > 5 || !comment) {
+        setToast({ message: "Rating must be 1–5 and comment cannot be empty", type: "error" });
         return;
       }
 
       const res = await axios.post(
         `https://quickbite-backend-6dvr.onrender.com/api/food-review/${itemId}/review`,
-        { rating: Number(rating), comment: comment.trim() },
+        { rating, comment },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("New review returned:", res.data.review);
-
-      // Update local menuData
+      // Update menuData with new review
       setMenuData((prev) => {
         const updated = { ...prev };
         for (let cat in updated) {
@@ -191,19 +181,12 @@ const OurMenu = () => {
         return updated;
       });
 
-      // Reset review form
-      setNewReview((prev) => ({
-        ...prev,
-        [itemId]: { rating: 0, comment: "" },
-      }));
-
+      // Reset form
+      setNewReview((prev) => ({ ...prev, [itemId]: { rating: 0, comment: "" } }));
       setToast({ message: "Review submitted successfully!", type: "success" });
     } catch (err) {
       console.error(err);
-      setToast({
-        message: err.response?.data?.message || "Failed to submit review",
-        type: "error",
-      });
+      setToast({ message: err.response?.data?.message || "Failed to submit review", type: "error" });
     }
   };
 
@@ -212,7 +195,6 @@ const OurMenu = () => {
   return (
     <div className="bg-gradient-to-br from-[#fefae0] via-[#e9edc9] to-[#fefae0] min-h-screen py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Toast */}
         {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
         {/* Search */}
@@ -302,57 +284,38 @@ const OurMenu = () => {
                   </div>
 
                   {/* Average Rating */}
-                  <div className="mt-4 border-t border-green-200 pt-3">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-green-800 text-sm">
-                        Average Rating
-                      </span>
-                      <AverageRatingDisplay reviews={item.reviews || []} />
-                    </div>
-                  </div>
+                  <AverageRatingDisplay reviews={item.reviews || []} />
 
-                  {/* Submit Review */}
-                  <form
-                    className="mt-2 bg-white/60 p-3 rounded-xl shadow-sm backdrop-blur-sm"
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      handleSubmitReview(item._id);
-                    }}
-                  >
+                  {/* Review Input */}
+                  <div className="mt-2 flex flex-col gap-2">
                     <StarRating
-                      rating={newReview[item._id]?.rating || 0}
+                      rating={(newReview[item._id]?.rating || 0)}
                       onRatingChange={(r) =>
                         setNewReview((prev) => ({
                           ...prev,
-                          [item._id]: {
-                            ...prev[item._id],
-                            rating: r,
-                          },
+                          [item._id]: { ...prev[item._id], rating: r },
                         }))
                       }
                     />
                     <textarea
-                      className="w-full p-3 mt-2 border border-green-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400 outline-none resize-none"
-                      placeholder="Write your review..."
-                      rows={3}
+                      rows={2}
+                      placeholder="Write a comment..."
                       value={newReview[item._id]?.comment || ""}
                       onChange={(e) =>
                         setNewReview((prev) => ({
                           ...prev,
-                          [item._id]: {
-                            ...prev[item._id],
-                            comment: e.target.value,
-                          },
+                          [item._id]: { ...prev[item._id], comment: e.target.value },
                         }))
                       }
+                      className="w-full px-3 py-2 rounded-lg border border-green-400/50 focus:border-green-600/80 outline-none resize-none text-green-900/80 text-sm sm:text-base"
                     />
                     <button
-                      type="submit"
-                      className="mt-2 w-full bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-500 hover:to-green-400 transition-all shadow-md"
+                      onClick={() => handleSubmitReview(item._id)}
+                      className="self-end px-4 py-2 bg-green-500/80 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors"
                     >
-                      Submit Review
+                      Submit
                     </button>
-                  </form>
+                  </div>
                 </div>
               </div>
             );
