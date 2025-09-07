@@ -4,7 +4,7 @@ import { useCart } from "../../CartContext/CartContext";
 import { FaMinus, FaPlus, FaSearch } from "react-icons/fa";
 import "./Om.css";
 
-// Toast notification
+// ⭐ Toast notification component
 const Toast = ({ message, type = "success", onClose }) => (
   <div
     className={`fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg text-white font-semibold transition-all duration-300 ${
@@ -12,13 +12,16 @@ const Toast = ({ message, type = "success", onClose }) => (
     }`}
   >
     {message}
-    <button onClick={onClose} className="ml-2 font-bold hover:text-gray-200">
+    <button
+      onClick={onClose}
+      className="ml-2 font-bold hover:text-gray-200"
+    >
       ✕
     </button>
   </div>
 );
 
-// Star rating component
+// ⭐ Modern reusable StarRating component
 const StarRating = ({ rating, onRatingChange, readOnly }) => (
   <div className="flex gap-1">
     {[1, 2, 3, 4, 5].map((star) => (
@@ -38,12 +41,12 @@ const StarRating = ({ rating, onRatingChange, readOnly }) => (
   </div>
 );
 
-// Average rating display
+// ⭐ Average rating component
 const AverageRatingDisplay = ({ reviews = [] }) => {
   const average = useMemo(() => {
-    if (!Array.isArray(reviews) || reviews.length === 0) return 0;
+    if (!reviews.length) return 0;
     return (
-      reviews.reduce((sum, r) => sum + (r?.rating || 0), 0) / reviews.length
+      reviews.reduce((a, r) => a + (r.rating || 0), 0) / reviews.length
     ).toFixed(1);
   }, [reviews]);
 
@@ -51,13 +54,13 @@ const AverageRatingDisplay = ({ reviews = [] }) => {
     <div className="flex items-center gap-2">
       <StarRating rating={Number(average)} readOnly />
       <span className="text-green-900/70 text-xs">
-        {average} ⭐ ({reviews?.length || 0})
+        {average} ⭐ ({reviews.length})
       </span>
     </div>
   );
 };
 
-// Cart control
+// ⭐ Cart control component
 const CartControl = ({ item, quantity, cartEntry, addToCart, updateQuantity, removeFromCart }) => (
   <div className="flex items-center gap-2">
     {quantity > 0 ? (
@@ -108,10 +111,10 @@ const OurMenu = () => {
   const [newReview, setNewReview] = useState({});
   const [toast, setToast] = useState(null);
 
-  const { cartItems: rawCart, addToCart, updateQuantity, removeFromCart } = useCart();
+  const { cartItems: rawCart, addToCart, updateQuantity, removeFromCart } =
+    useCart();
   const cartItems = rawCart.filter((ci) => ci.item);
 
-  // Fetch menu items
   useEffect(() => {
     const fetchMenu = async () => {
       try {
@@ -144,7 +147,7 @@ const OurMenu = () => {
     if (matchedCategory) setActiveCategory(matchedCategory);
   };
 
-  // Submit review
+  // ✅ Fixed Review Submission
   const handleSubmitReview = async (itemId) => {
     try {
       const token = localStorage.getItem("authToken");
@@ -157,18 +160,23 @@ const OurMenu = () => {
       const rating = Number(reviewData.rating) || 0;
       const comment = (reviewData.comment || "").trim();
 
-      if (!rating || rating < 1 || rating > 5 || !comment) {
-        setToast({ message: "Rating must be 1–5 and comment cannot be empty", type: "error" });
+      if (!rating || !comment) {
+        setToast({ message: "Rating & comment required", type: "error" });
         return;
       }
 
       const res = await axios.post(
         `https://quickbite-backend-6dvr.onrender.com/api/food-review/${itemId}/review`,
         { rating, comment },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
 
-      // Update menuData with new review
+      // Update local menuData with new review
       setMenuData((prev) => {
         const updated = { ...prev };
         for (let cat in updated) {
@@ -181,12 +189,18 @@ const OurMenu = () => {
         return updated;
       });
 
-      // Reset form
-      setNewReview((prev) => ({ ...prev, [itemId]: { rating: 0, comment: "" } }));
+      setNewReview((prev) => ({
+        ...prev,
+        [itemId]: { rating: 0, comment: "" },
+      }));
+
       setToast({ message: "Review submitted successfully!", type: "success" });
     } catch (err) {
       console.error(err);
-      setToast({ message: err.response?.data?.message || "Failed to submit review", type: "error" });
+      setToast({
+        message: err.response?.data?.message || "Failed to submit review",
+        type: "error",
+      });
     }
   };
 
@@ -197,8 +211,10 @@ const OurMenu = () => {
       <div className="max-w-7xl mx-auto">
         {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
-        {/* Search */}
-        <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto mb-8 group">
+        <form
+          onSubmit={handleSearch}
+          className="relative max-w-2xl mx-auto mb-8 group"
+        >
           <div className="flex items-center bg-green-900/30 rounded-xl border-2 border-lime-500/30 shadow-lg hover:border-lime-400/50 transition-all duration-300">
             <div className="pl-6 pr-3 py-4">
               <FaSearch className="text-xl text-lime-300/80" />
@@ -219,7 +235,6 @@ const OurMenu = () => {
           </div>
         </form>
 
-        {/* Categories */}
         <div className="flex flex-wrap justify-center gap-4 mb-16">
           {categories.map((cat) => (
             <button
@@ -236,7 +251,6 @@ const OurMenu = () => {
           ))}
         </div>
 
-        {/* Menu Items */}
         <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
           {displayItems.map((item) => {
             const cartEntry = getCartEntry(item._id);
@@ -247,7 +261,6 @@ const OurMenu = () => {
                 key={item._id}
                 className="relative bg-green-100/30 rounded-2xl overflow-hidden border border-green-800/20 backdrop-blur-sm flex flex-col transition-all duration-500 hover:scale-105 hover:shadow-lg"
               >
-                {/* Image */}
                 <div className="relative h-48 sm:h-56 md:h-60 flex items-center justify-center bg-black/5">
                   <img
                     loading="lazy"
@@ -257,7 +270,6 @@ const OurMenu = () => {
                   />
                 </div>
 
-                {/* Info */}
                 <div className="p-4 sm:p-6 flex flex-col flex-grow">
                   <h3 className="text-xl sm:text-2xl mb-2 font-dancingscript text-green-800">
                     {item.name}
@@ -266,7 +278,6 @@ const OurMenu = () => {
                     {item.description}
                   </p>
 
-                  {/* Price + Cart */}
                   <div className="mt-auto flex items-center gap-4 justify-between mb-2">
                     <div className="bg-green-50/60 backdrop-blur-sm px-3 py-1 rounded-2xl shadow-lg">
                       <span className="text-xl font-bold text-green-700 font-dancingscript">
@@ -283,13 +294,18 @@ const OurMenu = () => {
                     />
                   </div>
 
-                  {/* Average Rating */}
-                  <AverageRatingDisplay reviews={item.reviews || []} />
+                  <div className="mt-4 border-t border-green-200 pt-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-green-800 text-sm">
+                        Average Rating
+                      </span>
+                      <AverageRatingDisplay reviews={item.reviews || []} />
+                    </div>
+                  </div>
 
-                  {/* Review Input */}
-                  <div className="mt-2 flex flex-col gap-2">
+                  <div className="mt-2 bg-white/60 p-3 rounded-xl shadow-sm backdrop-blur-sm">
                     <StarRating
-                      rating={(newReview[item._id]?.rating || 0)}
+                      rating={newReview[item._id]?.rating || 0}
                       onRatingChange={(r) =>
                         setNewReview((prev) => ({
                           ...prev,
@@ -298,8 +314,9 @@ const OurMenu = () => {
                       }
                     />
                     <textarea
-                      rows={2}
-                      placeholder="Write a comment..."
+                      className="w-full p-3 mt-2 border border-green-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400 outline-none resize-none"
+                      placeholder="Write your review..."
+                      rows={3}
                       value={newReview[item._id]?.comment || ""}
                       onChange={(e) =>
                         setNewReview((prev) => ({
@@ -307,13 +324,12 @@ const OurMenu = () => {
                           [item._id]: { ...prev[item._id], comment: e.target.value },
                         }))
                       }
-                      className="w-full px-3 py-2 rounded-lg border border-green-400/50 focus:border-green-600/80 outline-none resize-none text-green-900/80 text-sm sm:text-base"
                     />
                     <button
                       onClick={() => handleSubmitReview(item._id)}
-                      className="self-end px-4 py-2 bg-green-500/80 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors"
+                      className="mt-2 w-full bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-500 hover:to-green-400 transition-all shadow-md"
                     >
-                      Submit
+                      Submit Review
                     </button>
                   </div>
                 </div>
