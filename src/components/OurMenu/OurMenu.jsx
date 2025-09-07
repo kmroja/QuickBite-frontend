@@ -42,17 +42,19 @@ const StarRating = ({ rating, onRatingChange, readOnly }) => (
 );
 
 // ⭐ Average rating component
-const AverageRatingDisplay = ({ itemId, reviews }) => {
-  const itemReviews = reviews[itemId] || [];
+const AverageRatingDisplay = ({ reviews = [] }) => {
   const average = useMemo(() => {
-    if (!itemReviews.length) return 0;
-    return (itemReviews.reduce((a, r) => a + r.rating, 0) / itemReviews.length).toFixed(1);
-  }, [itemReviews]);
+    if (!reviews.length) return 0;
+    return (
+      reviews.reduce((a, r) => a + (r.rating || 0), 0) / reviews.length
+    ).toFixed(1);
+  }, [reviews]);
+
   return (
     <div className="flex items-center gap-2">
       <StarRating rating={Number(average)} readOnly />
       <span className="text-green-900/70 text-xs">
-        {average} ⭐ ({itemReviews.length})
+        {average} ⭐ ({reviews.length})
       </span>
     </div>
   );
@@ -106,7 +108,6 @@ const OurMenu = () => {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [menuData, setMenuData] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
-  const [reviews, setReviews] = useState({});
   const [newReview, setNewReview] = useState({});
   const [toast, setToast] = useState(null);
 
@@ -114,7 +115,7 @@ const OurMenu = () => {
     useCart();
   const cartItems = rawCart.filter((ci) => ci.item);
 
-  // Fetch menu + reviews
+  // Fetch menu (items already contain reviews inside)
   useEffect(() => {
     const fetchMenu = async () => {
       try {
@@ -128,17 +129,6 @@ const OurMenu = () => {
           return acc;
         }, {});
         setMenuData(byCategory);
-
-        for (let item of res.data) {
-          try {
-            const reviewRes = await axios.get(
-              `https://quickbite-backend-6dvr.onrender.com/api/food-review/${item._id}/reviews`
-            );
-            setReviews((prev) => ({ ...prev, [item._id]: reviewRes.data }));
-          } catch (err) {
-            console.warn("Review fetch failed:", err);
-          }
-        }
       } catch (err) {
         console.error("Menu load failed:", err);
         setToast({ message: "Failed to load menu", type: "error" });
@@ -162,10 +152,18 @@ const OurMenu = () => {
   const handleSubmitReview = async (itemId) => {
     try {
       const token = localStorage.getItem("authToken");
-      if (!token) return setToast({ message: "Login to submit a review", type: "error" });
+      if (!token)
+        return setToast({
+          message: "Login to submit a review",
+          type: "error",
+        });
 
       const { rating = 0, comment = "" } = newReview[itemId] || {};
-      if (!rating || !comment) return setToast({ message: "Rating & comment required", type: "error" });
+      if (!rating || !comment)
+        return setToast({
+          message: "Rating & comment required",
+          type: "error",
+        });
 
       const res = await axios.post(
         `https://quickbite-backend-6dvr.onrender.com/api/food-review/${itemId}/review`,
@@ -173,10 +171,18 @@ const OurMenu = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setReviews((prev) => ({
-        ...prev,
-        [itemId]: [...(prev[itemId] || []), res.data.review],
-      }));
+      // Update local menuData with new review
+      setMenuData((prev) => {
+        const updated = { ...prev };
+        for (let cat in updated) {
+          updated[cat] = updated[cat].map((item) =>
+            item._id === itemId
+              ? { ...item, reviews: [...(item.reviews || []), res.data.review] }
+              : item
+          );
+        }
+        return updated;
+      });
 
       setNewReview((prev) => ({
         ...prev,
@@ -186,7 +192,10 @@ const OurMenu = () => {
       setToast({ message: "Review submitted successfully!", type: "success" });
     } catch (err) {
       console.error(err);
-      setToast({ message: err.response?.data?.message || "Failed to submit review", type: "error" });
+      setToast({
+        message: err.response?.data?.message || "Failed to submit review",
+        type: "error",
+      });
     }
   };
 
@@ -293,7 +302,7 @@ const OurMenu = () => {
                       <span className="font-semibold text-green-800 text-sm">
                         Average Rating
                       </span>
-                      <AverageRatingDisplay itemId={item._id} reviews={reviews} />
+                      <AverageRatingDisplay reviews={item.reviews || []} />
                     </div>
                   </div>
 
