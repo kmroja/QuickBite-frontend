@@ -308,39 +308,47 @@ const OurMenu = () => {
 
                   {/* ✍️ Submit Review */}
                   <div className="mt-2 bg-white/60 p-3 rounded-xl shadow-sm backdrop-blur-sm">
-                    <StarRating
-                      rating={newReview[item._id]?.rating || 0}
-                      onRatingChange={(r) =>
-                        setNewReview((prev) => ({
-                          ...prev,
-                          [item._id]: {
-                            ...prev[item._id],
-                            rating: r,
-                          },
-                        }))
-                      }
-                    />
-                    <textarea
-                      className="w-full p-3 mt-2 border border-green-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400 outline-none resize-none"
-                      placeholder="Write your review..."
-                      rows={3}
-                      value={newReview[item._id]?.comment || ""}
-                      onChange={(e) =>
-                        setNewReview((prev) => ({
-                          ...prev,
-                          [item._id]: {
-                            ...prev[item._id],
-                            comment: e.target.value,
-                          },
-                        }))
-                      }
-                    />
-                    <button
-                      onClick={() => handleSubmitReview(item._id)}
-                      className="mt-2 w-full bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-500 hover:to-green-400 transition-all shadow-md"
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault(); // ⬅ fix white screen
+                        handleSubmitReview(item._id);
+                      }}
                     >
-                      Submit Review
-                    </button>
+                      <StarRating
+                        rating={newReview[item._id]?.rating || 0}
+                        onRatingChange={(r) =>
+                          setNewReview((prev) => ({
+                            ...prev,
+                            [item._id]: {
+                              ...prev[item._id],
+                              rating: r,
+                            },
+                          }))
+                        }
+                      />
+                      <textarea
+                        className="w-full p-3 mt-2 border border-green-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400 outline-none resize-none"
+                        placeholder="Write your review..."
+                        rows={3}
+                        value={newReview[item._id]?.comment || ""}
+                        onChange={(e) =>
+                          setNewReview((prev) => ({
+                            ...prev,
+                            [item._id]: {
+                              ...prev[item._id],
+                              comment: e.target.value,
+                            },
+                          }))
+                        }
+                        required
+                      />
+                      <button
+                        type="submit" // ⬅ important
+                        className="mt-2 w-full bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-500 hover:to-green-400 transition-all shadow-md"
+                      >
+                        Submit Review
+                      </button>
+                    </form>
                   </div>
                 </div>
               </div>
