@@ -160,9 +160,12 @@ const OurMenu = () => {
       const reviewData = newReview[itemId] || {};
       let { rating = 0, comment = "" } = reviewData;
 
-      // Validate before sending
+      // ✅ Validation before sending
       if (!rating || rating < 1 || rating > 5 || !comment.trim()) {
-        setToast({ message: "Please provide rating (1-5) and comment", type: "error" });
+        setToast({
+          message: "Please provide a rating (1–5) and a comment",
+          type: "error",
+        });
         return;
       }
 
