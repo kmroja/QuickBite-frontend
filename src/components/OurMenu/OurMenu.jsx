@@ -41,12 +41,14 @@ const StarRating = ({ rating, onRatingChange, readOnly }) => (
   </div>
 );
 
-// ⭐ Average rating component
+// ⭐ Average rating component with safe calculation
 const AverageRatingDisplay = ({ reviews = [] }) => {
   const average = useMemo(() => {
     if (!reviews.length) return 0;
+    const validRatings = reviews.filter(r => r && typeof r.rating === "number");
+    if (!validRatings.length) return 0;
     return (
-      reviews.reduce((a, r) => a + (r.rating || 0), 0) / reviews.length
+      validRatings.reduce((a, r) => a + r.rating, 0) / validRatings.length
     ).toFixed(1);
   }, [reviews]);
 
@@ -115,7 +117,7 @@ const OurMenu = () => {
     useCart();
   const cartItems = rawCart.filter((ci) => ci.item);
 
-  // Fetch menu (items already contain reviews inside)
+  // Fetch menu
   useEffect(() => {
     const fetchMenu = async () => {
       try {
@@ -138,7 +140,6 @@ const OurMenu = () => {
   }, []);
 
   const getCartEntry = (id) => cartItems.find((ci) => ci.item?._id === id);
-  const getQuantity = (id) => getCartEntry(id)?.quantity ?? 0;
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -160,7 +161,7 @@ const OurMenu = () => {
       const reviewData = newReview[itemId] || {};
       let { rating = 0, comment = "" } = reviewData;
 
-      // ✅ Validation before sending
+      // ✅ Validation
       if (!rating || rating < 1 || rating > 5 || !comment.trim()) {
         setToast({
           message: "Please provide a rating (1–5) and a comment",
@@ -175,7 +176,9 @@ const OurMenu = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Update local menuData with new review
+      console.log("New review returned:", res.data.review);
+
+      // Update local menuData
       setMenuData((prev) => {
         const updated = { ...prev };
         for (let cat in updated) {
@@ -209,14 +212,11 @@ const OurMenu = () => {
   return (
     <div className="bg-gradient-to-br from-[#fefae0] via-[#e9edc9] to-[#fefae0] min-h-screen py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Toast Notification */}
+        {/* Toast */}
         {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
-        {/* 🔍 Search */}
-        <form
-          onSubmit={handleSearch}
-          className="relative max-w-2xl mx-auto mb-8 group"
-        >
+        {/* Search */}
+        <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto mb-8 group">
           <div className="flex items-center bg-green-900/30 rounded-xl border-2 border-lime-500/30 shadow-lg hover:border-lime-400/50 transition-all duration-300">
             <div className="pl-6 pr-3 py-4">
               <FaSearch className="text-xl text-lime-300/80" />
@@ -237,7 +237,7 @@ const OurMenu = () => {
           </div>
         </form>
 
-        {/* 🍽 Categories */}
+        {/* Categories */}
         <div className="flex flex-wrap justify-center gap-4 mb-16">
           {categories.map((cat) => (
             <button
@@ -254,7 +254,7 @@ const OurMenu = () => {
           ))}
         </div>
 
-        {/* 🍲 Menu Items */}
+        {/* Menu Items */}
         <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
           {displayItems.map((item) => {
             const cartEntry = getCartEntry(item._id);
@@ -265,7 +265,7 @@ const OurMenu = () => {
                 key={item._id}
                 className="relative bg-green-100/30 rounded-2xl overflow-hidden border border-green-800/20 backdrop-blur-sm flex flex-col transition-all duration-500 hover:scale-105 hover:shadow-lg"
               >
-                {/* 🖼 Image */}
+                {/* Image */}
                 <div className="relative h-48 sm:h-56 md:h-60 flex items-center justify-center bg-black/5">
                   <img
                     loading="lazy"
@@ -275,7 +275,7 @@ const OurMenu = () => {
                   />
                 </div>
 
-                {/* 📄 Info */}
+                {/* Info */}
                 <div className="p-4 sm:p-6 flex flex-col flex-grow">
                   <h3 className="text-xl sm:text-2xl mb-2 font-dancingscript text-green-800">
                     {item.name}
@@ -284,7 +284,7 @@ const OurMenu = () => {
                     {item.description}
                   </p>
 
-                  {/* 💰 Price + Cart */}
+                  {/* Price + Cart */}
                   <div className="mt-auto flex items-center gap-4 justify-between mb-2">
                     <div className="bg-green-50/60 backdrop-blur-sm px-3 py-1 rounded-2xl shadow-lg">
                       <span className="text-xl font-bold text-green-700 font-dancingscript">
@@ -301,7 +301,7 @@ const OurMenu = () => {
                     />
                   </div>
 
-                  {/* ⭐ Average Rating Only */}
+                  {/* Average Rating */}
                   <div className="mt-4 border-t border-green-200 pt-3">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-green-800 text-sm">
@@ -311,7 +311,7 @@ const OurMenu = () => {
                     </div>
                   </div>
 
-                  {/* ✍️ Submit Review */}
+                  {/* Submit Review */}
                   <form
                     className="mt-2 bg-white/60 p-3 rounded-xl shadow-sm backdrop-blur-sm"
                     onSubmit={(e) => {
