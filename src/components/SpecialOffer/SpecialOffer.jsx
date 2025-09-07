@@ -58,12 +58,12 @@ const SpecialOffer = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-green-900/80" />
               <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center bg-green-900/30 backdrop-blur-sm px-4 py-2 rounded-full">
-                <span className="flex items-center gap-2 text-lime-400">
+                {/* <span className="flex items-center gap-2 text-lime-400">
                   <FaStar /><b>{item.rating}</b>
-                </span>
-                <span className="flex items-center gap-2 text-emerald-400">
+                </span> */}
+                {/* <span className="flex items-center gap-2 text-emerald-400">
                   <FaHeart /><b>{item.hearts}</b>
-                </span>
+                </span> */}
               </div>
             </div>
 

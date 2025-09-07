@@ -1,135 +1,259 @@
-// frontend/src/components/SignUp.jsx
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { FaEye, FaEyeSlash, FaCheckCircle, FaArrowLeft } from 'react-icons/fa';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import {
+  FaEye,
+  FaEyeSlash,
+  FaArrowLeft,
+  FaCheckCircle,
+  FaUser,
+  FaEnvelope,
+  FaLock,
+  FaKey,
+} from "react-icons/fa";
 
-const url = 'https://quickbite-backend-6dvr.onrender.com';
-
-const AwesomeToast = ({ message, icon }) => (
-  <div className="animate-slide-in fixed bottom-6 right-6 flex items-center bg-gradient-to-br from-amber-500 to-amber-600 px-6 py-4 rounded-lg shadow-lg border-2 border-amber-300/20">
-    <span className="text-2xl mr-3 text-[#2D1B0E]">{icon}</span>
-    <span className="font-semibold text-[#2D1B0E]">{message}</span>
-  </div>
-);
+const url = "https://quickbite-backend-6dvr.onrender.com";
+const ADMIN_SECRET_KEY = "admin123";
 
 const SignUp = () => {
-  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    role: "user",
+    adminKey: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
-  const [toast, setToast] = useState({ visible: false, message: '', icon: null });
+  const [toast, setToast] = useState({
+    visible: false,
+    message: "",
+    isError: false,
+  });
   const [invalidEmail, setInvalidEmail] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (toast.visible && toast.message === 'Sign Up Successful!') {
-      const timer = setTimeout(() => {
-        setToast({ visible: false, message: '', icon: null });
-        navigate('/login');
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [toast, navigate]);
-
-  const toggleShowPassword = () => setShowPassword(prev => !prev);
-
-  const handleChange = e =>
+  const toggleShowPassword = () => setShowPassword((prev) => !prev);
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  const isValidGmail = (email) =>
+    /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
 
-  const isValidGmail = email => /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
+  const toggleRole = () => {
+    setFormData((prev) => ({
+      ...prev,
+      role: prev.role === "user" ? "admin" : "user",
+      adminKey: "",
+    }));
+  };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Frontend validation
     if (!formData.username.trim()) {
-      setToast({ visible: true, message: 'Username is required!', icon: <FaCheckCircle /> });
+      setToast({
+        visible: true,
+        message: "Username is required!",
+        isError: true,
+      });
       return;
     }
     if (!formData.email.trim() || !isValidGmail(formData.email)) {
       setInvalidEmail(true);
-      setToast({ visible: true, message: 'Please enter a valid Gmail address!', icon: <FaCheckCircle /> });
+      setToast({
+        visible: true,
+        message: "Please enter a valid Gmail address!",
+        isError: true,
+      });
       return;
     }
     setInvalidEmail(false);
     if (!formData.password.trim() || formData.password.length < 6) {
-      setToast({ visible: true, message: 'Password must be at least 6 characters!', icon: <FaCheckCircle /> });
+      setToast({
+        visible: true,
+        message: "Password must be at least 6 characters!",
+        isError: true,
+      });
+      return;
+    }
+
+    if (
+      formData.role === "admin" &&
+      formData.adminKey !== ADMIN_SECRET_KEY
+    ) {
+      setToast({
+        visible: true,
+        message: "Invalid admin authentication key!",
+        isError: true,
+      });
       return;
     }
 
     try {
       const res = await axios.post(`${url}/api/user/register`, formData);
+
       if (res.data.success && res.data.token) {
-        localStorage.setItem('authToken', res.data.token);
-        setToast({ visible: true, message: 'Sign Up Successful!', icon: <FaCheckCircle /> });
+        localStorage.setItem("authToken", res.data.token);
+
+        if (formData.role === "admin") {
+          // Redirect admins to Netlify admin panel
+          window.location.href =
+            "https://quickbite-adminapp.netlify.app/";
+        } else {
+          setToast({
+            visible: true,
+            message: "Sign Up Successful!",
+            isError: false,
+          });
+          setTimeout(() => navigate("/login"), 2000);
+        }
         return;
       }
-      throw new Error(res.data.message || 'Registration failed.');
+
+      throw new Error(res.data.message || "Registration failed.");
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Registration failed.';
-      setToast({ visible: true, message: msg, icon: <FaCheckCircle /> });
+      const msg =
+        err.response?.data?.message ||
+        err.message ||
+        "Registration failed.";
+      setToast({ visible: true, message: msg, isError: true });
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f0fdf4] p-4">
-      {toast.visible && <AwesomeToast message={toast.message} icon={toast.icon} />}
-      <div className="w-full max-w-md bg-gradient-to-br from-[#bbf7d0] to-[#86efac] p-8 rounded-xl shadow-lg border-4 border-green-700/20 transform transition-all duration-300 hover:shadow-2xl">
-        <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-green-500 to-lime-600 bg-clip-text text-transparent mb-6 hover:scale-105 transition-transform">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a0f0a] via-[#0d1a0f] to-[#0a0f0a] relative overflow-hidden">
+      {/* Background glow effects */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="w-[600px] h-[600px] bg-green-500/10 rounded-full blur-3xl absolute -top-40 -left-40" />
+        <div className="w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl absolute bottom-0 right-0" />
+      </div>
+
+      {/* Toast Notification */}
+      {toast.visible && (
+        <div className="fixed top-6 right-6 z-50 animate-slide-in">
+          <div
+            className={`px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 text-sm ${
+              toast.isError
+                ? "bg-red-600 text-white"
+                : "bg-green-600 text-white"
+            }`}
+          >
+            <FaCheckCircle className="flex-shrink-0" />
+            <span>{toast.message}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Sign Up Form */}
+      <div className="relative z-10 w-full max-w-md bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
+        <h1 className="text-3xl font-bold text-center text-green-400 mb-6">
           Create Account
         </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={formData.username}
-            onChange={handleChange}
-            className="w-full px-4 py-3 rounded-lg bg-[#ecfdf5] text-green-900 placeholder-green-500 focus:outline-none focus:ring-2 focus:ring-green-600 transition-all duration-200 hover:scale-[1.02]"
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className={`w-full px-4 py-3 rounded-lg bg-[#ecfdf5] text-green-900 placeholder-green-500 focus:outline-none focus:ring-2 focus:ring-green-600 transition-all duration-200 hover:scale-[1.02] ${invalidEmail ? 'border-2 border-red-500' : ''}`}
-            required
-          />
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Username */}
           <div className="relative">
+            <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-green-400" />
             <input
-              type={showPassword ? 'text' : 'password'}
+              type="text"
+              name="username"
+              placeholder="Username"
+              value={formData.username}
+              onChange={handleChange}
+              className="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-900/60 text-white placeholder-gray-400 border border-gray-700 focus:ring-2 focus:ring-green-400 focus:outline-none"
+              required
+            />
+          </div>
+
+          {/* Email */}
+          <div className="relative">
+            <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-green-400" />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email (only Gmail allowed)"
+              value={formData.email}
+              onChange={handleChange}
+              className={`w-full pl-10 pr-4 py-3 rounded-lg bg-gray-900/60 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-400 focus:outline-none ${
+                invalidEmail
+                  ? "border-2 border-red-500"
+                  : "border border-gray-700"
+              }`}
+              required
+            />
+          </div>
+
+          {/* Password */}
+          <div className="relative">
+            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-green-400" />
+            <input
+              type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-lg bg-[#ecfdf5] text-green-900 placeholder-green-500 focus:outline-none focus:ring-2 focus:ring-green-600 transition-all duration-200 hover:scale-[1.02]"
+              className="w-full pl-10 pr-10 py-3 rounded-lg bg-gray-900/60 text-white placeholder-gray-400 border border-gray-700 focus:ring-2 focus:ring-green-400 focus:outline-none"
               required
             />
             <button
               type="button"
               onClick={toggleShowPassword}
-              className="absolute inset-y-0 right-4 flex items-center text-green-600 hover:text-green-800 transition-colors transform hover:scale-125"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-400"
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
+
+          {/* Role selection - toggle switch */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-green-300">
+              {formData.role === "user" ? "User" : "Admin"}
+            </span>
+            <div
+              onClick={toggleRole}
+              className={`w-16 h-8 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                formData.role === "admin" ? "bg-amber-500" : "bg-green-500"
+              }`}
+            >
+              <div
+                className={`bg-white w-6 h-6 rounded-full shadow-md transform transition-transform ${
+                  formData.role === "admin" ? "translate-x-8" : "translate-x-0"
+                }`}
+              />
+            </div>
+          </div>
+
+          {/* Admin Key */}
+          {formData.role === "admin" && (
+            <div className="relative">
+              <FaKey className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400" />
+              <input
+                type="password"
+                name="adminKey"
+                placeholder="Enter Admin Authentication Key"
+                value={formData.adminKey}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-900/60 text-white placeholder-gray-400 border border-gray-700 focus:ring-2 focus:ring-amber-400 focus:outline-none"
+                required
+              />
+            </div>
+          )}
+
+          {/* Submit */}
           <button
             type="submit"
-            className="w-full py-3 bg-gradient-to-r from-lime-400 to-green-500 text-white font-bold rounded-lg hover:scale-105 transition-transform duration-300 hover:shadow-lg"
+            className="w-full py-3 bg-gradient-to-r from-green-400 via-lime-500 to-amber-500 text-[#07120a] font-bold rounded-lg flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform shadow-lg"
           >
             Sign Up
           </button>
         </form>
-        <div className="mt-6 text-center">
+
+        {/* Back to Login */}
+        <div className="text-center mt-6">
           <Link
             to="/login"
-            className="group inline-flex items-center text-green-600 hover:text-green-800 transition-all duration-300"
+            className="inline-flex items-center gap-2 text-green-400 hover:text-green-500 transition-colors"
           >
-            <FaArrowLeft className="mr-2 transform -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300" />
-            <span className="transform group-hover:-translate-x-2 transition-all duration-300">
-              Back To Login
-            </span>
+            <FaArrowLeft /> Back to Login
           </Link>
         </div>
       </div>

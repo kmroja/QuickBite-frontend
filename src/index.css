@@ -1,36 +1,50 @@
 @import "tailwindcss";
 
-@keyframes orbit {
-  0% {
-    transform: rotate(0deg) translateX(150px) rotate(0deg);
-  }
+/* 🚫 Removed orbit keyframes + orbit classes */
 
-  100% {
-    transform: rotate(360deg) translateX(150px) rotate(-360deg);
-  }
-}
-
-.orbit {
-  animation: orbit 20s linear infinite;
-}
-
-.orbit-delay-5 {
-  animation: orbit 20s linear infinite -5s;
-}
-
-.orbit-delay-10 {
-  animation: orbit 20s linear infinite -10s;
-}
-
-.orbit-delay-15 {
-  animation: orbit 20s linear infinite -15s;
-}
-
+/* Keep only bicycle animation */
 @keyframes bicycleMove {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .animate-bicycle {
   animation: bicycleMove 6s linear infinite;
+}
+@keyframes floatUp {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+.animate-floatUp {
+  animation: floatUp linear infinite;
+}
+
+@keyframes drift {
+  0% {
+    transform: translateX(-10vw) translateY(var(--y, 0));
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(110vw) translateY(var(--y, 0));
+    opacity: 0.6;
+  }
+}
+.animate-drift {
+  animation: drift linear infinite;
 }

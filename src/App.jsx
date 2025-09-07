@@ -1,47 +1,113 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home/Home';
-import Cart from './pages/Cart/Cart';
-import SignUp from './components/SignUp/SignUp';
-import ContactPage from './pages/ContactPage/ContactPage';
-import CheckoutPage from './pages/Checkout/Checkout';
-import AboutPage from './pages/AboutPage/AboutPage';
-import Menu from './pages/Menu/Menu';
-import PrivateRoute from './components/PrivateRoute/PrivateRoute';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 
-import MyOrders from './pages/MyOredrs/MyOrders';
-import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
+// Public pages
+import Home from "./pages/Home/Home";
+import SignUp from "./components/SignUp/SignUp";
+import Login from "./components/Login/Login";
+import ContactPage from "./pages/ContactPage/ContactPage";
+import AboutPage from "./pages/AboutPage/AboutPage";
+import Menu from "./pages/Menu/Menu";
+
+// Protected user pages
+import Cart from "./pages/Cart/Cart";
+import CheckoutPage from "./pages/Checkout/Checkout";
+import MyOrders from "./pages/MyOrders/MyOrders";
+import VerifyPaymentPage from "./pages/VerifyPaymentPage/VerifyPaymentPage";
+
+// Admin pages
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AddItems from "./pages/admin/AddItems/AddItems";
+import ListItems from "./pages/admin/ListItems/ListItems";
+import Orders from "./pages/admin/Orders/Orders";
+
+// Components
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
+import AdminToggle from "./components/AdminToggle/AdminToggle";
+import FloatingIcons from "./components/FloatingParticle/FloatingParticle";
 
 function App() {
   return (
-    <Routes>
-      {/* Public */}
-      <Route path="/" element={<Home />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/login" element={<Home />} />
-      <Route path="/contact" element={<ContactPage />} />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/menu" element={<Menu />} />
+    <>
+      {/* Floating food icons everywhere */}
+      <FloatingIcons />
 
-      {/* Payment verification */}
-      <Route path="/myorder/verify" element={<VerifyPaymentPage />} />
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/menu" element={<Menu />} />
 
-      {/* Protected */}
-      <Route
-        path="/cart"
-        element={<PrivateRoute><Cart /></PrivateRoute>}
-      />
-      <Route
-        path="/checkout"
-        element={<PrivateRoute><CheckoutPage /></PrivateRoute>}
-      />
+        {/* Payment verification */}
+        <Route path="/myorder/verify" element={<VerifyPaymentPage />} />
 
-      {/* The actual orders list */}
-      <Route
-        path="/myorder"
-        element={<PrivateRoute><MyOrders /></PrivateRoute>}
-      />
-    </Routes>
+        {/* User Protected Routes */}
+        <Route
+          path="/cart"
+          element={
+            <PrivateRoute>
+              <Cart />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <PrivateRoute>
+              <CheckoutPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/myorder"
+          element={
+            <PrivateRoute>
+              <MyOrders />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Admin Protected Routes */}
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute role="admin">
+              <AdminDashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/add-items"
+          element={
+            <PrivateRoute role="admin">
+              <AddItems />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/list-items"
+          element={
+            <PrivateRoute role="admin">
+              <ListItems />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <PrivateRoute role="admin">
+              <Orders />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+
+      {/* Global floating button (only visible for Admins) */}
+      <AdminToggle />
+    </>
   );
 }
 

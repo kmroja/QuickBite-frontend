@@ -1,10 +1,9 @@
-// src/components/Banner.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaPlay, FaTimes } from 'react-icons/fa';
 import { bannerAssets } from '../../assets/dummydata';
 import DeliveryBike from '../../assets/delivery-bike.svg';
-import LeafImg from '../../assets/leaf.svg'; // Add a small leaf icon or SVG in your assets
+import LeafImg from '../../assets/leaf.svg';
 import "../../index.css";
 
 const Banner = () => {
@@ -17,7 +16,7 @@ const Banner = () => {
       <div className="bg-gradient-to-br from-green-100 via-green-600 to-lime-900 text-white py-16 px-4 sm:px-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-green-900/20 to-lime-700/10" />
 
-        {/* Leaf Particles Container */}
+        {/* Leaf Particles */}
         <div className="absolute inset-0 pointer-events-none">
           {[...Array(12)].map((_, i) => (
             <img
@@ -48,7 +47,6 @@ const Banner = () => {
               Best cooks and best delivery guys all at your service.
             </p>
 
-            {/* Animated Delivery Bicycle with motion blur */}
             <div className="relative w-full h-32 overflow-hidden">
               <img
                 src={DeliveryBike}
@@ -77,7 +75,7 @@ const Banner = () => {
             </div>
           </div>
 
-          {/* Right Hero Image with 3D effect */}
+          {/* Right Hero Image */}
           <div className="flex-1 relative group mt-8 md:mt-0 min-h-[300px] sm:min-h-[400px]">
             <div className="relative rounded-full p-2 bg-gradient-to-br from-green-700 via-green-800 to-lime-400 shadow-2xl z-20 w-[250px] xs:w-[300px] sm:w-[350px] h-[250px] xs:h-[300px] sm:h-[350px] mx-auto animate-float group-hover:animate-float-hover">
               <img
@@ -117,67 +115,33 @@ const Banner = () => {
       {/* Styles & Animations */}
       <style>
         {`
-          /* Gradient animation for heading */
-          @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-          }
-          .text-gradient-animate {
-            background: linear-gradient(270deg, #a5d6a7, #c8e6c9, #81c784);
-            background-size: 600% 600%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientMove 8s ease infinite;
-          }
+          @keyframes gradientMove {0% { background-position:0% 50%; }50% { background-position:100% 50%; }100% { background-position:0% 50%; } }
+          .text-gradient-animate { background: linear-gradient(270deg,#a5d6a7,#c8e6c9,#81c784); background-size:600% 600%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:gradientMove 8s ease infinite; }
 
-          /* Delivery bike animation */
-          @keyframes moveBike {
-            0% { left: -150px; opacity: 0; transform: rotate(-10deg); }
-            20% { opacity: 1; }
-            40% { left: 50%; transform: translateX(-50%) rotate(0deg); }
-            60% { left: 50%; transform: translateX(-50%) rotate(0deg); }
-            80% { opacity: 1; }
-            100% { left: 110%; opacity: 0; transform: rotate(10deg); }
-          }
+          @keyframes moveBike {0% {left:-150px;opacity:0;transform:rotate(-10deg);}20% {opacity:1;}40% {left:50%;transform:translateX(-50%) rotate(0deg);}60% {left:50%;transform:translateX(-50%) rotate(0deg);}80% {opacity:1;}100% {left:110%;opacity:0;transform:rotate(10deg);} }
           .animate-bike { animation: moveBike 6s ease-in-out infinite; }
-
-          @keyframes bikeTrail { 0%,100%{opacity:0;} 40%,60%{opacity:0.3;} }
+          @keyframes bikeTrail {0%,100%{opacity:0;}40%,60%{opacity:0.3;} }
           .animate-bike-trail { animation: bikeTrail 6s ease-in-out infinite; }
           .drop-shadow-bike-glow { filter: drop-shadow(0 0 15px rgba(132,204,22,0.6)); }
 
-          /* Leaf particle animations */
-          ${[0,1,2,3].map(i => `
-            @keyframes leaf${i} {
-              0% { transform: translateY(0px) rotate(0deg) scale(0.8); opacity:0; }
-              20% { opacity: 1; }
-              50% { transform: translateY(300px) rotate(${i*90}deg) scale(1); opacity:1; }
-              100% { transform: translateY(600px) rotate(${i*180}deg) scale(0.5); opacity:0; }
-            }
-            .animate-leaf-${i} { animation: leaf${i} ${6+i}s linear infinite; }
-          `).join("")}
+          ${[0,1,2,3].map(i => `@keyframes leaf${i} {0% {transform:translateY(0px) rotate(0deg) scale(0.8); opacity:0;}20% {opacity:1;}50% {transform:translateY(300px) rotate(${i*90}deg) scale(1); opacity:1;}100% {transform:translateY(600px) rotate(${i*180}deg) scale(0.5); opacity:0;}} .animate-leaf-${i} {animation:leaf${i} ${6+i}s linear infinite;}`).join("")}
 
-          /* Fade & slide animations */
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+          @keyframes fadeIn { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
           .animate-fadeIn { animation: fadeIn 1.2s ease-in-out forwards; }
           .animate-slideUp { animation: fadeIn 1.5s ease-out forwards; }
 
-          /* Float animation for hero image */
-          @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
-          @keyframes floatHover { 0% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-8px) scale(1.02); } 100% { transform: translateY(0px) scale(1); } }
+          @keyframes float {0%{transform:translateY(0px);}50%{transform:translateY(-12px);}100%{transform:translateY(0px);} }
+          @keyframes floatHover {0%{transform:translateY(0px) scale(1);}50%{transform:translateY(-8px) scale(1.02);}100%{transform:translateY(0px) scale(1);} }
           .animate-float { animation: float 4s ease-in-out infinite; }
           .group-hover\\:animate-float-hover:hover { animation: floatHover 4s ease-in-out infinite; }
 
-          /* Play icon pulse */
-          @keyframes pulsePlay { 0%,100%{transform:scale(1);} 50%{transform:scale(1.2);} }
+          @keyframes pulsePlay {0%,100%{transform:scale(1);}50%{transform:scale(1.2);} }
           .group-hover\\:animate-pulsePlay:hover { animation: pulsePlay 1s infinite; }
 
-          /* Hero image ring pulse */
-          @keyframes pulseRing { 0%,100%{opacity:0.5;} 50%{opacity:0.8;} }
+          @keyframes pulseRing {0%,100%{opacity:0.5;}50%{opacity:0.8;} }
           .animate-pulseRing { animation: pulseRing 3s ease-in-out infinite; }
 
-          /* Video modal scale */
-          @keyframes scaleIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+          @keyframes scaleIn { from { opacity:0; transform:scale(0.8);} to {opacity:1; transform:scale(1);} }
           .animate-scaleIn { animation: scaleIn 0.5s ease-out forwards; }
         `}
       </style>

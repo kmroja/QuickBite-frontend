@@ -13,6 +13,7 @@ import {
 import { GiChefToque, GiForkKnifeSpoon } from 'react-icons/gi';
 import Login from '../Login/Login';
 import { useCart } from '../../CartContext/CartContext';
+import AdminToggle from '../AdminToggle/AdminToggle'; // Added AdminToggle
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,12 +44,14 @@ const Navbar = () => {
   const handleLoginSuccess = () => {
     localStorage.setItem('loginData', JSON.stringify({ loggedIn: true }));
     setIsAuthenticated(true);
+    window.dispatchEvent(new Event("authChange")); // 🔔 notify AdminToggle
     navigate('/');
   };
 
   const handleLogout = () => {
     localStorage.removeItem('loginData');
     setIsAuthenticated(false);
+    window.dispatchEvent(new Event("authChange")); // 🔔 notify AdminToggle
   };
 
   const renderDesktopAuthButton = () => {
@@ -100,6 +103,8 @@ const Navbar = () => {
 
   return (
     <nav className="bg-[#1F2D20] border-b-8 border-emerald-900/40 shadow-[0_25px_50px_-12px] shadow-emerald-900/30 sticky top-0 z-50 font-vibes">
+      {/* 🔹 Your same layout kept untouched */}
+
       <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-full max-w-7xl px-4">
         <div className="h-[6px] bg-gradient-to-r from-transparent via-emerald-600/50 to-transparent shadow-[0_0_20px] shadow-emerald-500/30"></div>
         <div className="flex justify-between px-6">
@@ -110,6 +115,7 @@ const Navbar = () => {
 
       <div className="max-w-7xl mx-auto px-4 relative">
         <div className="flex justify-between items-center h-16 lg:h-20">
+          {/* Logo Section */}
           <div className="flex-shrink-0 flex items-center space-x-2 group">
             <GiChefToque className="text-2xl md:text-3xl lg:text-4xl text-emerald-500 transition-all group-hover:rotate-12" />
             <div className="flex flex-col ml-1 md:ml-2">
@@ -123,6 +129,7 @@ const Navbar = () => {
             </div>
           </div>
 
+          {/* Desktop Section */}
           <div className="hidden lg:flex items-center space-x-2 xl:space-x-4 flex-1 justify-end">
             {navLinks.map((link) => (
               <NavLink
@@ -149,10 +156,16 @@ const Navbar = () => {
                   </span>
                 )}
               </NavLink>
+
+              {/* Desktop Auth Button */}
               {renderDesktopAuthButton()}
+
+              {/* ✅ Admin Toggle */}
+              <AdminToggle />
             </div>
           </div>
 
+          {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -168,6 +181,7 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Mobile Menu */}
       {isOpen && (
         <div className="lg:hidden bg-[#1F2D20] border-t-4 border-emerald-900/40">
           <div className="px-4 py-4 space-y-3">
@@ -200,12 +214,18 @@ const Navbar = () => {
                   </span>
                 )}
               </NavLink>
+
+              {/* Mobile Auth Button */}
               {renderMobileAuthButton()}
+
+              {/* ✅ Admin Toggle in Mobile */}
+              <AdminToggle />
             </div>
           </div>
         </div>
       )}
 
+      {/* Login Modal */}
       {showLoginModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-gradient-to-br from-[#1F2D20] to-[#324C39] rounded-xl p-8 w-full max-w-md relative border-4 border-emerald-700/30">

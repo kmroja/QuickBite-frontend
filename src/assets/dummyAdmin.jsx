@@ -1,217 +1,74 @@
+// src/assets/dummyAdmin.jsx
+import React from "react";
+import { FaUtensils, FaUsers, FaShoppingCart, FaClipboardList } from "react-icons/fa";
+import { FiClock, FiTruck, FiCheckCircle } from "react-icons/fi";
 
-// DUMMY DATA FOR MYORDERPAGE
-const statusStyles = {
-    processing: {
-        color: 'text-amber-400',
-        bg: 'bg-amber-900/20',
-        icon: <FiClock className="text-lg" />,
-        label: 'Processing'
-    },
-    outForDelivery: {
-        color: 'text-blue-400',
-        bg: 'bg-blue-900/20',
-        icon: <FiTruck className="text-lg" />,
-        label: 'Out for Delivery'
-    },
-    delivered: {
-        color: 'text-green-400',
-        bg: 'bg-green-900/20',
-        icon: <FiCheckCircle className="text-lg" />,
-        label: 'Delivered'
-    },
-    pending: {
-        color: 'text-yellow-400',
-        bg: 'bg-yellow-900/20',
-        icon: <FiClock className="text-lg" />,
-        label: 'Payment Pending'
-    },
-    succeeded: {
-        color: 'text-green-400',
-        bg: 'bg-green-900/20',
-        icon: <FiCheckCircle className="text-lg" />,
-        label: 'Completed'
-    }
+// Sidebar navigation links (AdminDashboard)
+export const navLinksSidebar = [
+  { name: "Dashboard", href: "/admin", icon: <FaClipboardList /> },
+  { name: "Add Items", href: "/admin/add-items", icon: <FaUtensils /> },
+  { name: "List Items", href: "/admin/list-items", icon: <FaShoppingCart /> },
+  { name: "Orders", href: "/admin/orders", icon: <FaClipboardList /> },
+  { name: "Users", href: "/admin/users", icon: <FaUsers /> },
+];
+
+// Navbar navigation links (Top Navbar in user pages)
+export const navLinksNavbar = [
+  { name: "Home", href: "/", icon: <FaUtensils /> },
+  { name: "Menu", href: "/menu", icon: <FaShoppingCart /> },
+  { name: "Orders", href: "/orders", icon: <FaClipboardList /> },
+  { name: "Profile", href: "/profile", icon: <FaUsers /> },
+];
+
+// General styles
+export const styles = {
+  pageWrapper: "min-h-screen bg-gradient-to-br from-[#dfece2] via-[#b9c8ac] to-[#7b8b6f] py-12 px-4 sm:px-6 lg:px-8",
+  cardContainer: "bg-[#eef3eb]/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-green-700/20",
+  title: "text-3xl font-bold mb-8 bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent text-center",
+  formWrapper: "min-h-screen py-10 px-4 sm:px-6 lg:px-8",
+  formCard: "bg-[#eef3eb]/80 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-green-700/20",
+  formTitle: "text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-green-600 to-green-900 bg-clip-text text-transparent text-center",
+  uploadWrapper: "flex justify-center",
+  uploadLabel: "w-full max-w-xs sm:w-72 h-56 sm:h-72 bg-[#cbdac6]/50 border-2 border-dashed border-green-600/30 rounded-2xl cursor-pointer flex items-center justify-center overflow-hidden hover:border-green-500 transition-all",
+  uploadIcon: "text-3xl sm:text-4xl text-green-700 mb-2 mx-auto animate-pulse",
+  uploadText: "text-green-700 text-sm",
+  previewImage: "w-full h-full object-cover",
+  inputField: "w-full bg-[#cbdac6]/50 border border-green-700/20 rounded-xl px-4 py-3 sm:px-5 sm:py-4 focus:outline-none focus:border-green-500 text-green-900",
+  gridTwoCols: "grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6",
+  relativeInput: "relative",
+  rupeeIcon: "absolute left-4 top-1/2 -translate-y-1/2 text-green-700 text-lg sm:text-xl",
+  actionBtn: "w-full bg-gradient-to-r from-green-700 to-green-900 text-white px-6 sm:px-8 py-4 sm:py-5 rounded-2xl font-bold text-base sm:text-lg transition-all hover:shadow-2xl hover:shadow-green-500/30 hover:scale-[1.02] active:scale-95 mt-6",
 };
 
-const getPaymentMethodDetails = (method) => {
-    switch (method.toLowerCase()) {
-        case 'cod':
-            return {
-                label: 'COD',
-                class: 'bg-yellow-600/30 text-yellow-300 border-yellow-500/50'
-            };
-        case 'card':
-            return {
-                label: 'Credit/Debit Card',
-                class: 'bg-blue-600/30 text-blue-300 border-blue-500/50'
-            };
-        case 'upi':
-            return {
-                label: 'UPI Payment',
-                class: 'bg-purple-600/30 text-purple-300 border-purple-500/50'
-            };
-        default:
-            return {
-                label: 'Online',
-                class: 'bg-green-600/30 text-green-400 border-green-500/50'
-            };
-    }
+// Table styles for ListItems & Orders
+export const tableClasses = {
+  wrapper: "overflow-x-auto",
+  table: "w-full",
+  headerRow: "bg-[#cbdac6]/60",
+  headerCell: "p-4 text-left text-green-800",
+  row: "border-b border-green-800/20 hover:bg-[#a8bfa0]/30 transition-colors",
+  cellBase: "p-4",
 };
 
-<tr>
-    <th className="p-4 text-left text-amber-400">Order ID</th>
-    <th className="p-4 text-left text-amber-400">Customer</th>
-    <th className="p-4 text-left text-amber-400">Address</th>
-    <th className="p-4 text-left text-amber-400">Items</th>
-    <th className="p-4 text-left text-amber-400">Total Items</th>
-    <th className="p-4 text-left text-amber-400">Price</th>
-    <th className="p-4 text-left text-amber-400">Payment</th>
-    <th className="p-4 text-left text-amber-400">Status</th>
-</tr>
+// Layout classes for pages
+export const layoutClasses = {
+  page: "min-h-screen bg-gradient-to-br from-[#dfece2] via-[#b9c8ac] to-[#7b8b6f] py-12 px-4 sm:px-6 lg:px-8",
+  card: "bg-[#eef3eb]/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-green-700/20",
+  heading: "text-3xl font-bold mb-8 bg-gradient-to-r from-green-600 to-green-900 bg-clip-text text-transparent text-center",
+};
 
-{
-    orders.map((order) => {
-        const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
-        const totalPrice = order.total ?? order.items.reduce(
-            (sum, item) => sum + (item.item.price * item.quantity),
-            0
-        );
-        const paymentMethod = getPaymentMethodDetails(order.paymentMethod);
-        const status = statusStyles[order.status] || statusStyles.processing;
-        const paymentStatus = statusStyles[order.paymentStatus] || statusStyles.pending;
+// Order status styling
+export const statusStyles = {
+  processing: { color: "text-green-700", bg: "bg-green-900/10", icon: "FiClock", label: "Processing" },
+  outForDelivery: { color: "text-lime-600", bg: "bg-lime-900/10", icon: "FiTruck", label: "Out for Delivery" },
+  delivered: { color: "text-emerald-600", bg: "bg-emerald-900/10", icon: "FiCheckCircle", label: "Delivered" },
+  succeeded: { color: "text-emerald-600", bg: "bg-emerald-900/10", icon: "FiCheckCircle", label: "Completed" },
+};
 
-
-        // NAVBAR COPY TO SAVE TIME
-        return (
-            <nav className="bg-[#2D1B0E] border-b-8 border-amber-900/40 shadow-[0_25px_50px_-12px] shadow-amber-900/30 sticky top-0 z-50 font-vibes">
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-full max-w-7xl px-4">
-                    <div className="h-[6px] bg-gradient-to-r from-transparent via-amber-600/50 to-transparent shadow-[0_0_20px] shadow-amber-500/30"></div>
-                    <div className="flex justify-between px-6">
-                        <GiForkKnifeSpoon className="text-amber-500/40 -mt-4 -ml-2 rotate-45" size={32} />
-                        <GiForkKnifeSpoon className="text-amber-500/40 -mt-4 -mr-2 -rotate-45" size={32} />
-                    </div>
-                </div>
-
-                <div className="max-w-7xl mx-auto px-4 relative">
-                    <div className="flex justify-between items-center h-16 lg:h-20">
-                        {/* Logo Section */}
-                        <div className="flex-shrink-0 flex items-center space-x-2 group">
-                            <GiChefToque className="text-2xl md:text-3xl lg:text-4xl text-amber-500 transition-all group-hover:rotate-12" />
-                            <div className="flex flex-col ml-1 md:ml-2">
-                                <NavLink
-                                    to="/"
-                                    className="text-lg md:text-xl lg:text-2xl xl:text-3xl bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent font-monsieur tracking-wider whitespace-nowrap"
-                                >
-                                    QuickBite
-                                </NavLink>
-                                <div className="h-[3px] bg-gradient-to-r from-amber-600/30 via-amber-400/50 to-amber-600/30 w-full mt-1" />
-                            </div>
-                        </div>
-
-                        {/* Desktop Navigation */}
-                        <div className="hidden lg:flex items-center space-x-2 xl:space-x-4 flex-1 justify-end">
-                            {navLinks.map((link) => (
-                                <NavLink
-                                    key={link.name}
-                                    to={link.href}
-                                    className={({ isActive }) =>
-                                        `px-2 xl:px-4 py-2 flex items-center space-x-2 rounded-3xl border-2 transition-colors text-sm xl:text-base
-                          ${isActive ? 'bg-amber-900/20 border-amber-600/50' : 'border-transparent hover:border-amber-600/50'}`
-                                    }
-                                >
-                                    <span className="text-amber-500">{link.icon}</span>
-                                    <span className="text-amber-100">{link.name}</span>
-                                </NavLink>
-                            ))}
-                            <div className="flex items-center space-x-2 xl:space-x-4 ml-2 xl:ml-4">
-                                <NavLink
-                                    to="/cart"
-                                    className="p-2 relative text-amber-100 hover:text-amber-300 transition-colors"
-                                >
-                                    <FiShoppingCart className="text-lg xl:text-xl" />
-                                    {totalItems > 0 && (
-                                        <span className="absolute -top-1 -right-1 bg-amber-600 text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                                            {totalItems}
-                                        </span>
-                                    )}
-                                </NavLink>
-                                {renderDesktopAuthButton()}
-                            </div>
-                        </div>
-
-                        {/* Hamburger Menu Button */}
-                        <div className="lg:hidden flex items-center">
-                            <button
-                                onClick={() => setIsOpen(!isOpen)}
-                                className="text-amber-500 hover:text-amber-300 p-2 rounded-xl border-2 border-amber-900/30 transition-colors"
-                            >
-                                <div className="space-y-2">
-                                    <span className={`block w-6 h-0.5 bg-current transition-transform ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
-                                    <span className={`block w-6 h-0.5 bg-current ${isOpen ? 'opacity-0' : ''}`} />
-                                    <span className={`block w-6 h-0.5 bg-current transition-transform ${isOpen ? '-rotate-45 -translate-y-2' : ''}`} />
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Mobile/Tablet Menu */}
-                {isOpen && (
-                    <div className="lg:hidden bg-[#2D1B0E] border-t-4 border-amber-900/40">
-                        <div className="px-4 py-4 space-y-3">
-                            {navLinks.map((link) => (
-                                <NavLink
-                                    key={link.name}
-                                    to={link.href}
-                                    onClick={() => setIsOpen(false)}
-                                    className={({ isActive }) =>
-                                        `flex items-center space-x-3 px-4 py-3 rounded-xl ${isActive ? 'bg-amber-600/30 text-amber-400' : 'text-amber-100 hover:bg-amber-600/20'
-                                        }`
-                                    }
-                                >
-                                    <span className="text-amber-500">{link.icon}</span>
-                                    <span>{link.name}</span>
-                                </NavLink>
-                            ))}
-                            <div className="pt-4 border-t border-amber-900/40 space-y-3">
-                                <NavLink
-                                    to="/cart"
-                                    onClick={() => setIsOpen(false)}
-                                    className="flex items-center justify-center space-x-2 px-4 py-3 text-amber-100 hover:bg-amber-600/20 rounded-xl"
-                                >
-                                    <FiShoppingCart />
-                                    <span>Cart</span>
-                                    {totalItems > 0 && (
-                                        <span className="bg-amber-600 text-xs px-2 py-1 rounded-full">
-                                            {totalItems}
-                                        </span>
-                                    )}
-                                </NavLink>
-                                {renderMobileAuthButton()}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Login Modal */}
-                {showLoginModal && (
-                    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-                        <div className="bg-gradient-to-br from-[#2D1B0E] to-[#4a372a] rounded-xl p-8 w-full max-w-md relative border-4 border-amber-700/30">
-                            <button
-                                onClick={() => navigate('/')}
-                                className="absolute top-4 right-4 text-amber-500 hover:text-amber-300 text-2xl"
-                            >
-                                &times;
-                            </button>
-                            <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent mb-6 text-center">
-                                QuickBite
-                            </h2>
-                            <Login onLoginSuccess={handleLoginSuccess} onClose={() => navigate('/')} />
-                        </div>
-                    </div>
-                )}
-            </nav>
-        );
-    }
-);
-}
+// Payment method styles
+export const paymentMethodDetails = {
+  cod: { label: "COD", class: "bg-green-700/30 text-green-200 border-green-500/50" },
+  card: { label: "Credit/Debit Card", class: "bg-lime-700/30 text-lime-200 border-lime-500/50" },
+  upi: { label: "UPI Payment", class: "bg-emerald-700/30 text-emerald-200 border-emerald-500/50" },
+  default: { label: "Online", class: "bg-teal-700/30 text-teal-200 border-teal-500/50" },
+};
