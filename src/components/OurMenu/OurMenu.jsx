@@ -152,22 +152,23 @@ const OurMenu = () => {
   const handleSubmitReview = async (itemId) => {
     try {
       const token = localStorage.getItem("authToken");
-      if (!token)
-        return setToast({
-          message: "Login to submit a review",
-          type: "error",
-        });
+      if (!token) {
+        setToast({ message: "Login to submit a review", type: "error" });
+        return;
+      }
 
-      const { rating = 0, comment = "" } = newReview[itemId] || {};
-      if (!rating || !comment)
-        return setToast({
-          message: "Rating & comment required",
-          type: "error",
-        });
+      const reviewData = newReview[itemId] || {};
+      let { rating = 0, comment = "" } = reviewData;
+
+      // Validate before sending
+      if (!rating || rating < 1 || rating > 5 || !comment.trim()) {
+        setToast({ message: "Please provide rating (1-5) and comment", type: "error" });
+        return;
+      }
 
       const res = await axios.post(
         `https://quickbite-backend-6dvr.onrender.com/api/food-review/${itemId}/review`,
-        { rating, comment },
+        { rating: Number(rating), comment: comment.trim() },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -184,6 +185,7 @@ const OurMenu = () => {
         return updated;
       });
 
+      // Reset review form
       setNewReview((prev) => ({
         ...prev,
         [itemId]: { rating: 0, comment: "" },
@@ -307,49 +309,47 @@ const OurMenu = () => {
                   </div>
 
                   {/* ✍️ Submit Review */}
-                  <div className="mt-2 bg-white/60 p-3 rounded-xl shadow-sm backdrop-blur-sm">
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault(); // ⬅ fix white screen
-                        handleSubmitReview(item._id);
-                      }}
+                  <form
+                    className="mt-2 bg-white/60 p-3 rounded-xl shadow-sm backdrop-blur-sm"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleSubmitReview(item._id);
+                    }}
+                  >
+                    <StarRating
+                      rating={newReview[item._id]?.rating || 0}
+                      onRatingChange={(r) =>
+                        setNewReview((prev) => ({
+                          ...prev,
+                          [item._id]: {
+                            ...prev[item._id],
+                            rating: r,
+                          },
+                        }))
+                      }
+                    />
+                    <textarea
+                      className="w-full p-3 mt-2 border border-green-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400 outline-none resize-none"
+                      placeholder="Write your review..."
+                      rows={3}
+                      value={newReview[item._id]?.comment || ""}
+                      onChange={(e) =>
+                        setNewReview((prev) => ({
+                          ...prev,
+                          [item._id]: {
+                            ...prev[item._id],
+                            comment: e.target.value,
+                          },
+                        }))
+                      }
+                    />
+                    <button
+                      type="submit"
+                      className="mt-2 w-full bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-500 hover:to-green-400 transition-all shadow-md"
                     >
-                      <StarRating
-                        rating={newReview[item._id]?.rating || 0}
-                        onRatingChange={(r) =>
-                          setNewReview((prev) => ({
-                            ...prev,
-                            [item._id]: {
-                              ...prev[item._id],
-                              rating: r,
-                            },
-                          }))
-                        }
-                      />
-                      <textarea
-                        className="w-full p-3 mt-2 border border-green-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400 outline-none resize-none"
-                        placeholder="Write your review..."
-                        rows={3}
-                        value={newReview[item._id]?.comment || ""}
-                        onChange={(e) =>
-                          setNewReview((prev) => ({
-                            ...prev,
-                            [item._id]: {
-                              ...prev[item._id],
-                              comment: e.target.value,
-                            },
-                          }))
-                        }
-                        required
-                      />
-                      <button
-                        type="submit" // ⬅ important
-                        className="mt-2 w-full bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-500 hover:to-green-400 transition-all shadow-md"
-                      >
-                        Submit Review
-                      </button>
-                    </form>
-                  </div>
+                      Submit Review
+                    </button>
+                  </form>
                 </div>
               </div>
             );
