@@ -62,7 +62,14 @@ const AverageRatingDisplay = ({ reviews = [] }) => {
 };
 
 // ⭐ Cart control component
-const CartControl = ({ item, quantity, cartEntry, addToCart, updateQuantity, removeFromCart }) => (
+const CartControl = ({
+  item,
+  quantity,
+  cartEntry,
+  addToCart,
+  updateQuantity,
+  removeFromCart,
+}) => (
   <div className="flex items-center gap-2">
     {quantity > 0 ? (
       <>
@@ -173,13 +180,16 @@ const OurMenu = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // ✅ Update menuData with new review
+      // ✅ Append review safely if backend returns it
       setMenuData((prev) => {
         const updated = { ...prev };
         for (let cat in updated) {
           updated[cat] = updated[cat].map((item) =>
             item._id === itemId
-              ? { ...item, reviews: [...(item.reviews || []), res.data.review] }
+              ? {
+                  ...item,
+                  reviews: [...(item.reviews || []), res.data.review || { rating, comment }],
+                }
               : item
           );
         }
@@ -196,8 +206,14 @@ const OurMenu = () => {
       console.error("Review submit failed:", err);
 
       if (err.response?.status === 400) {
+        // ✅ Catch duplicate review attempt
         setToast({
-          message: err.response.data.message || "You already submitted a review",
+          message: err.response.data.message || "You already reviewed this item",
+          type: "error",
+        });
+      } else if (err.response?.status === 401) {
+        setToast({
+          message: "Please login to submit a review",
           type: "error",
         });
       } else {
