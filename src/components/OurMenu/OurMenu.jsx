@@ -13,10 +13,7 @@ const Toast = ({ message, type = "success", onClose }) => (
     }`}
   >
     {message}
-    <button
-      onClick={onClose}
-      className="ml-2 font-bold hover:text-gray-200"
-    >
+    <button onClick={onClose} className="ml-2 font-bold hover:text-gray-200">
       ✕
     </button>
   </div>
@@ -188,7 +185,10 @@ const OurMenu = () => {
             item._id === itemId
               ? {
                   ...item,
-                  reviews: [...(item.reviews || []), res.data.review || { rating, comment }],
+                  reviews: [
+                    ...(item.reviews || []),
+                    res.data.review || { rating, comment },
+                  ],
                 }
               : item
           );
@@ -205,23 +205,15 @@ const OurMenu = () => {
     } catch (err) {
       console.error("Review submit failed:", err);
 
-      if (err.response?.status === 400) {
-        // ✅ Catch duplicate review attempt
-        setToast({
-          message: err.response.data.message || "You already reviewed this item",
-          type: "error",
-        });
-      } else if (err.response?.status === 401) {
-        setToast({
-          message: "Please login to submit a review",
-          type: "error",
-        });
-      } else {
-        setToast({
-          message: "Failed to submit review, try again later",
-          type: "error",
-        });
-      }
+      const errorMsg =
+        err.response?.data?.message ||
+        (err.response?.status === 400
+          ? "You already reviewed this item"
+          : err.response?.status === 401
+          ? "Please login to submit a review"
+          : "Failed to submit review, try again later");
+
+      setToast({ message: errorMsg, type: "error" });
     }
   };
 
