@@ -1,3 +1,4 @@
+// OurMenu.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { useCart } from "../../CartContext/CartContext";
@@ -115,7 +116,7 @@ const OurMenu = () => {
     useCart();
   const cartItems = rawCart.filter((ci) => ci.item);
 
-  // Fetch menu (items already contain reviews inside)
+  // Fetch menu
   useEffect(() => {
     const fetchMenu = async () => {
       try {
@@ -148,7 +149,7 @@ const OurMenu = () => {
     if (matchedCategory) setActiveCategory(matchedCategory);
   };
 
-  // Submit review
+  // ✅ Submit review with duplicate handling
   const handleSubmitReview = async (itemId) => {
     try {
       const token = localStorage.getItem("authToken");
@@ -172,7 +173,7 @@ const OurMenu = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Update local menuData with new review safely
+      // ✅ Update menuData with new review
       setMenuData((prev) => {
         const updated = { ...prev };
         for (let cat in updated) {
@@ -192,11 +193,19 @@ const OurMenu = () => {
 
       setToast({ message: "Review submitted successfully!", type: "success" });
     } catch (err) {
-      console.error(err);
-      setToast({
-        message: err.response?.data?.message || "Failed to submit review",
-        type: "error",
-      });
+      console.error("Review submit failed:", err);
+
+      if (err.response?.status === 400) {
+        setToast({
+          message: err.response.data.message || "You already submitted a review",
+          type: "error",
+        });
+      } else {
+        setToast({
+          message: "Failed to submit review, try again later",
+          type: "error",
+        });
+      }
     }
   };
 
