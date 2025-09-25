@@ -42,14 +42,14 @@ const AdminToggle = () => {
     }
   };
 
-  return (
-    <button
-      onClick={handleToggle}
-      className="fixed bottom-6 right-6 bg-gradient-to-br from-lime-400 to-emerald-600 text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 hover:shadow-emerald-500/60 transition-transform font-semibold"
-    >
-      {isFrontend ? "Switch to Admin Panel" : "Switch to Frontend"}
-    </button>
-  );
+  // return (
+  //   <button
+  //     onClick={handleToggle}
+  //     className="fixed bottom-6 right-6 bg-gradient-to-br from-lime-400 to-emerald-600 text-white px-4 py-2 rounded-full shadow-lg hover:scale-105 hover:shadow-emerald-500/60 transition-transform font-semibold"
+  //   >
+  //     {isFrontend ? "Switch to Admin Panel" : "Switch to Frontend"}
+  //   </button>
+  // );
 };
 
 export default AdminToggle;

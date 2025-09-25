@@ -31,7 +31,7 @@ const AdminNavbar = ({ totalItems, renderDesktopAuthButton, renderMobileAuthButt
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-4 flex-1 justify-end">
-            {navLinks.map((link) => (
+            {navLinksNavbar.map((link) => (
               <NavLink
                 key={link.name}
                 to={link.href}

@@ -17,9 +17,9 @@ import VerifyPaymentPage from "./pages/VerifyPaymentPage/VerifyPaymentPage";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AddItems from "./pages/admin/AddItems/AddItems";
-import ListItems from "./pages/admin/ListItems/ListItems";
-import Orders from "./pages/admin/Orders/Orders";
+import AddItems from './pages/admin/AddItems/AddItems';
+import Orders from './pages/admin/Orders/Orders';
+import ListItems from './pages/admin/ListItems/ListItems';
 
 // Components
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
@@ -80,7 +80,7 @@ function App() {
           }
         />
         <Route
-          path="/admin/add-items"
+          path="/admin/"
           element={
             <PrivateRoute role="admin">
               <AddItems />
@@ -88,7 +88,7 @@ function App() {
           }
         />
         <Route
-          path="/admin/list-items"
+          path="/admin/list"
           element={
             <PrivateRoute role="admin">
               <ListItems />

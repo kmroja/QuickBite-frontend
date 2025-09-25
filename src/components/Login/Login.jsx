@@ -12,7 +12,6 @@ import {
 } from 'react-icons/fa';
 
 const url = 'https://quickbite-backend-6dvr.onrender.com';
-const ADMIN_PANEL_URL = 'https://quickbite-adminapp.netlify.app/';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,7 +23,6 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', isError: false });
   const [invalidEmail, setInvalidEmail] = useState(false);
-  const [showAdminModal, setShowAdminModal] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('rememberMe');
@@ -78,8 +76,9 @@ const Login = () => {
 
         setTimeout(() => {
           setToast({ visible: false, message: '', isError: false });
+          // ✅ Direct navigation: if admin -> /admin, else -> /
           if (userData.role === 'admin') {
-            setShowAdminModal(true);
+            navigate('/admin');
           } else {
             navigate('/');
           }
@@ -117,33 +116,6 @@ const Login = () => {
           <span>{toast.message}</span>
         </div>
       </div>
-
-      {/* Admin Modal */}
-      {showAdminModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="bg-[#142019] p-8 rounded-xl shadow-2xl max-w-sm w-full text-center space-y-4">
-            <h2 className="text-2xl font-bold text-amber-400">Admin Logged In</h2>
-            <p className="text-amber-100">You are logged in as an Admin. Choose where to go:</p>
-            <div className="flex flex-col gap-3 mt-4">
-              <button
-                onClick={() => window.open(ADMIN_PANEL_URL, '_blank')}
-                className="bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600 transition"
-              >
-                Go to Admin Panel
-              </button>
-              <button
-                onClick={() => {
-                  setShowAdminModal(false);
-                  navigate('/');
-                }}
-                className="bg-gray-700 text-amber-300 px-4 py-2 rounded-md hover:bg-gray-800 transition"
-              >
-                Continue on Home
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Login Form */}
       <div className="relative z-10 w-full max-w-md bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
