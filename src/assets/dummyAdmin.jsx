@@ -72,16 +72,16 @@ export const layoutClasses = {
   page:
     "min-h-screen bg-gradient-to-br from-[#dfece2] via-[#b9c8ac] to-[#7b8b6f] py-12 px-4 sm:px-6 lg:px-8",
   card:
-    "bg-[#eef3eb]/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-green-700/20",
+    "bg-[#4f514e]/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-green-700/20",
   heading:
-    "text-3xl font-bold mb-8 bg-gradient-to-r from-green-600 to-green-900 bg-clip-text text-transparent text-center",
+    "text-3xl font-bold mb-8 bg-gradient-to-r from-green-900 to-green-900 bg-clip-text text-transparent text-center",
 };
 
 /* ---------------- Order status styling ------------------------------------ */
 export const statusStyles = {
-  processing:   { color: "text-green-700", bg: "bg-green-900/10",  icon: "FiClock",      label: "Processing" },
-  outForDelivery:{color: "text-lime-600",  bg: "bg-lime-900/10",   icon: "FiTruck",      label: "Out for Delivery" },
-  delivered:    { color: "text-emerald-600", bg: "bg-emerald-900/10", icon: "FiCheckCircle", label: "Delivered" },
+  processing:   { color: "text-red-700", bg: "bg-green-900/10",  icon: "FiClock",      label: "Processing" },
+  outForDelivery:{color: "text-yellow-600",  bg: "bg-lime-900/10",   icon: "FiTruck",      label: "Out for Delivery" },
+  delivered:    { color: "text-green-600", bg: "bg-emerald-900/10", icon: "FiCheckCircle", label: "Delivered" },
   succeeded:    { color: "text-emerald-600", bg: "bg-emerald-900/10", icon: "FiCheckCircle", label: "Completed" },
 };
 
