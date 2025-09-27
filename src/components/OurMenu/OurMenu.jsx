@@ -5,6 +5,9 @@ import { useCart } from "../../CartContext/CartContext";
 import { FaMinus, FaPlus, FaSearch } from "react-icons/fa";
 import "./Om.css";
 
+
+console.log("Error status:", err.response?.status);
+console.log("Error data:", err.response?.data);
 // ⭐ Toast notification component
 const Toast = ({ message, type = "success", onClose }) => (
   <div
