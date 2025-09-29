@@ -20,8 +20,9 @@ QuickBite is a full-stack MERN application that enables users to browse foods, a
 ---
 ADMIN ACCESS
 
-Admin deployed URL : https://quickbite-adminapp.netlify.app/
-Admin Source code : https://github.com/kmroja/QuickBite-admin.git
+email- admin1@gmail.com
+pass- Admin@123
+passkey- admin123
 
 Stripe Test Payments (Test Mode)
 
