@@ -5,9 +5,6 @@ import { useCart } from "../../CartContext/CartContext";
 import { FaMinus, FaPlus, FaSearch } from "react-icons/fa";
 import "./Om.css";
 
-
-console.log("Error status:", err.response?.status);
-console.log("Error data:", err.response?.data);
 // ⭐ Toast notification component
 const Toast = ({ message, type = "success", onClose }) => (
   <div
@@ -138,7 +135,7 @@ const OurMenu = () => {
         }, {});
         setMenuData(byCategory);
       } catch (err) {
-        console.error("Menu load failed:", err);
+        console.error("Menu load failed:", err.response?.data || err.message);
         setToast({ message: "Failed to load menu", type: "error" });
       }
     };
@@ -206,7 +203,10 @@ const OurMenu = () => {
 
       setToast({ message: "Review submitted successfully!", type: "success" });
     } catch (err) {
-      console.error("Review submit failed:", err);
+      console.error(
+        "Review submit failed:",
+        err.response?.data?.message || err.message
+      );
 
       const errorMsg =
         err.response?.data?.message ||
