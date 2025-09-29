@@ -1,5 +1,9 @@
+// App.jsx
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+
+// Context
+import { CartProvider } from "./CartContext/CartContext";
 
 // Public pages
 import Home from "./pages/Home/Home";
@@ -17,18 +21,21 @@ import VerifyPaymentPage from "./pages/VerifyPaymentPage/VerifyPaymentPage";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AddItems from './pages/admin/AddItems/AddItems';
-import Orders from './pages/admin/Orders/Orders';
-import ListItems from './pages/admin/ListItems/ListItems';
+import AddItems from "./pages/admin/AddItems/AddItems";
+import Orders from "./pages/admin/Orders/Orders";
+import ListItems from "./pages/admin/ListItems/ListItems";
 
 // Components
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import AdminToggle from "./components/AdminToggle/AdminToggle";
 import FloatingIcons from "./components/FloatingParticle/FloatingParticle";
 
+// Optional: Global toast can be added here
+// import Toast from "./components/Toast/Toast";
+
 function App() {
   return (
-    <>
+    <CartProvider>
       {/* Floating food icons everywhere */}
       <FloatingIcons />
 
@@ -80,7 +87,7 @@ function App() {
           }
         />
         <Route
-          path="/admin/"
+          path="/admin/add-items"
           element={
             <PrivateRoute role="admin">
               <AddItems />
@@ -107,7 +114,7 @@ function App() {
 
       {/* Global floating button (only visible for Admins) */}
       <AdminToggle />
-    </>
+    </CartProvider>
   );
 }
 
