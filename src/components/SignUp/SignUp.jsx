@@ -35,8 +35,10 @@ const SignUp = () => {
   const toggleShowPassword = () => setShowPassword((prev) => !prev);
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  const isValidGmail = (email) =>
-    /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
+
+  // ✅ General email validation (not only Gmail)
+  const isValidEmail = (email) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const toggleRole = () => {
     setFormData((prev) => ({
@@ -57,16 +59,19 @@ const SignUp = () => {
       });
       return;
     }
-    if (!formData.email.trim() || !isValidGmail(formData.email)) {
+
+    if (!formData.email.trim() || !isValidEmail(formData.email)) {
       setInvalidEmail(true);
       setToast({
         visible: true,
-        message: "Please enter a valid Gmail address!",
+        message: "Please enter a valid email address!",
         isError: true,
       });
       return;
     }
+
     setInvalidEmail(false);
+
     if (!formData.password.trim() || formData.password.length < 6) {
       setToast({
         visible: true,
@@ -76,10 +81,7 @@ const SignUp = () => {
       return;
     }
 
-    if (
-      formData.role === "admin" &&
-      formData.adminKey !== ADMIN_SECRET_KEY
-    ) {
+    if (formData.role === "admin" && formData.adminKey !== ADMIN_SECRET_KEY) {
       setToast({
         visible: true,
         message: "Invalid admin authentication key!",
@@ -96,8 +98,7 @@ const SignUp = () => {
 
         if (formData.role === "admin") {
           // Redirect admins to Netlify admin panel
-          window.location.href =
-            "https://quickbite-adminapp.netlify.app/";
+          window.location.href = "https://quickbite-adminapp.netlify.app/";
         } else {
           setToast({
             visible: true,
@@ -170,7 +171,7 @@ const SignUp = () => {
             <input
               type="email"
               name="email"
-              placeholder="Email (only Gmail allowed)"
+              placeholder="Email"
               value={formData.email}
               onChange={handleChange}
               className={`w-full pl-10 pr-4 py-3 rounded-lg bg-gray-900/60 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-400 focus:outline-none ${
