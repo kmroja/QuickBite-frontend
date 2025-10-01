@@ -37,14 +37,16 @@ const Login = () => {
       [name]: type === 'checkbox' ? checked : value,
     }));
 
-  const isValidGmail = email => /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
+  // ✅ Updated regex: allows any valid email (not only Gmail)
+  const isValidEmail = email =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = async e => {
     e.preventDefault();
 
-    if (!formData.email.trim() || !isValidGmail(formData.email)) {
+    if (!formData.email.trim() || !isValidEmail(formData.email)) {
       setInvalidEmail(true);
-      setToast({ visible: true, message: 'Please enter a valid Gmail address!', isError: true });
+      setToast({ visible: true, message: 'Please enter a valid email address!', isError: true });
       return;
     }
     setInvalidEmail(false);
@@ -76,7 +78,7 @@ const Login = () => {
 
         setTimeout(() => {
           setToast({ visible: false, message: '', isError: false });
-          // ✅ Direct navigation: if admin -> /admin, else -> /
+          // ✅ Role-based navigation
           if (userData.role === 'admin') {
             navigate('/admin');
           } else {
@@ -128,7 +130,7 @@ const Login = () => {
             <input
               type="email"
               name="email"
-              placeholder="Enter your Gmail"
+              placeholder="Enter your Email"
               value={formData.email}
               onChange={handleChange}
               className={`w-full pl-10 pr-4 py-3 rounded-lg bg-gray-900/60 text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-400 focus:outline-none ${
