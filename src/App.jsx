@@ -21,7 +21,7 @@ import VerifyPaymentPage from "./pages/VerifyPaymentPage/VerifyPaymentPage";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AddItems from "./pages/admin/AddItems/Items";
+import AddItems from "./pages/admin/AddItems/AddItems";
 import Orders from "./pages/admin/Orders/Orders";
 import ListItems from "./pages/admin/ListItems/ListItems";
 
