@@ -16,7 +16,7 @@ import MyOrders from "./pages/MyOrders/MyOrders";
 import VerifyPaymentPage from "./pages/VerifyPaymentPage/VerifyPaymentPage";
 
 // Admin pages
-// import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import AddItems from './pages/admin/AddItems/AddItems';
 import Orders from './pages/admin/Orders/Orders';
 import ListItems from './pages/admin/ListItems/ListItems';
@@ -71,16 +71,16 @@ function App() {
         />
 
         {/* Admin Protected Routes */}
-        {/* <Route
+        <Route
           path="/admin"
           element={
             <PrivateRoute role="admin">
               <AdminDashboard />
             </PrivateRoute>
           }
-        /> */}
+        />
         <Route
-          path="/admin/"
+          path="/admin/add"
           element={
             <PrivateRoute role="admin">
               <AddItems />

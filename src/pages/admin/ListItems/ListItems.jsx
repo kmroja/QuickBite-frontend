@@ -1,4 +1,4 @@
-// src/components/ListItems.jsx
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FiTrash2, FiStar, FiHeart } from 'react-icons/fi';
