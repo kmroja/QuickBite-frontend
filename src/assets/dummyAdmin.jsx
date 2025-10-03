@@ -21,7 +21,7 @@ export const navLinksSidebar = [
 
 /* ---------------- Navbar navigation links (User pages top navbar) ----------- */
 export const navLinksNavbar = [
-   { name: "Dashboard",  href: "/admin",        icon: <FaTachometerAlt /> },
+  { name: "Dashboard",  href: "/admin",        icon: <FaTachometerAlt /> },
   { name: "Home",   href: "/",       icon: <FaUtensils /> },
   { name: "Add Items",  href: "/admin/",    icon: <FaPlus /> },
   { name: "List Items", href: "/admin/list",   icon: <FaList /> },        // ✅ fixed path

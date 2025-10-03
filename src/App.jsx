@@ -29,7 +29,6 @@ import FloatingIcons from "./components/FloatingParticle/FloatingParticle";
 function App() {
   return (
     <>
-      {/* Floating food icons everywhere */}
       <FloatingIcons />
 
       <Routes>
@@ -45,71 +44,20 @@ function App() {
         <Route path="/myorder/verify" element={<VerifyPaymentPage />} />
 
         {/* User Protected Routes */}
-        <Route
-          path="/cart"
-          element={
-            <PrivateRoute>
-              <Cart />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/checkout"
-          element={
-            <PrivateRoute>
-              <CheckoutPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/myorder"
-          element={
-            <PrivateRoute>
-              <MyOrders />
-            </PrivateRoute>
-          }
-        />
+        <Route path="/cart" element={<PrivateRoute><Cart /></PrivateRoute>} />
+        <Route path="/checkout" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
+        <Route path="/myorder" element={<PrivateRoute><MyOrders /></PrivateRoute>} />
 
         {/* Admin Protected Routes */}
-        <Route
-          path="/admin"
-          element={
-            <PrivateRoute role="admin">
-              <AdminDashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin/add"
-          element={
-            <PrivateRoute role="admin">
-              <AddItems />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin/list"
-          element={
-            <PrivateRoute role="admin">
-              <ListItems />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin/orders"
-          element={
-            <PrivateRoute role="admin">
-              <Orders />
-            </PrivateRoute>
-          }
-        />
+        <Route path="/admin" element={<PrivateRoute role="admin"><AdminDashboard /></PrivateRoute>} />
+        <Route path="/admin/add" element={<PrivateRoute role="admin"><AddItems /></PrivateRoute>} />
+        <Route path="/admin/list" element={<PrivateRoute role="admin"><ListItems /></PrivateRoute>} />
+        <Route path="/admin/orders" element={<PrivateRoute role="admin"><Orders /></PrivateRoute>} />
       </Routes>
 
-      {/* Global floating button (only visible for Admins) */}
       <AdminToggle />
     </>
   );
 }
 
 export default App;
-
