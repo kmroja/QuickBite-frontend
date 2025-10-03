@@ -20,6 +20,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AddItems from './pages/admin/AddItems/AddItems';
 import Orders from './pages/admin/Orders/Orders';
 import ListItems from './pages/admin/ListItems/ListItems';
+import AdminUsers from "./pages/admin/Users/AdminUsers.jsx";
 
 // Components
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
@@ -50,6 +51,22 @@ function App() {
 
         {/* Admin Protected Routes */}
         <Route path="/admin" element={<PrivateRoute role="admin"><AdminDashboard /></PrivateRoute>} />
+        <Route
+        path="/admin"
+        element={
+          <PrivateRoute role="admin">
+            <AdminDashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <PrivateRoute role="admin">
+            <AdminUsers />
+          </PrivateRoute>
+        }
+      />
         <Route path="/admin/add" element={<PrivateRoute role="admin"><AddItems /></PrivateRoute>} />
         <Route path="/admin/list" element={<PrivateRoute role="admin"><ListItems /></PrivateRoute>} />
         <Route path="/admin/orders" element={<PrivateRoute role="admin"><Orders /></PrivateRoute>} />
