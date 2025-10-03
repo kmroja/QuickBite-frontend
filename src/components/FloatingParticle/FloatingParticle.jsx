@@ -15,7 +15,7 @@ const icons = [
   <GiFrenchFries className="text-yellow-400" />,
   <FaHotdog className="text-red-500" />,
   <GiScooter className="text-green-500" />,
-  <FaCoffee className="text-amber-700" />,
+  // <FaCoffee className="text-amber-700" />,
   <GiSandwich className="text-amber-600" />,
 ];
 

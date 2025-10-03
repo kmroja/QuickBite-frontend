@@ -25,12 +25,12 @@ import AdminUsers from "./pages/admin/Users/AdminUsers.jsx";
 // Components
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import AdminToggle from "./components/AdminToggle/AdminToggle";
-import FloatingIcons from "./components/FloatingParticle/FloatingParticle";
+// import FloatingIcons from "./components/FloatingParticle/FloatingParticle";
 
 function App() {
   return (
     <>
-      <FloatingIcons />
+      {/* <FloatingIcons /> */}
 
       <Routes>
         {/* Public Routes */}
