@@ -85,7 +85,7 @@ export const CartProvider = ({ children }) => {
 
     try {
       const res = await axios.post(
-        "https://quickbite-backend-6dvr.onrender.com/api/cart",
+        "http://localhost:4000/api/cart",
         { itemId: item._id, quantity: qty },
         { headers: { Authorization: `Bearer ${token}` } }
       );
