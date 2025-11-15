@@ -19,7 +19,7 @@ const Orders = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [collapsed, setCollapsed] = useState(false);
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("authToken");
   const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {

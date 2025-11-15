@@ -1,3 +1,4 @@
+// assets/dummyAdmin.jsx
 import React from "react";
 import {
   FaUtensils,
@@ -7,17 +8,22 @@ import {
   FaTachometerAlt,
   FaPlus,
   FaList,
+  FaStore,
+  FaRegListAlt,
 } from "react-icons/fa";
-import { FiClock, FiTruck, FiCheckCircle } from "react-icons/fi";
 
-/* ---------------- Sidebar navigation links (Admin Dashboard) ---------------- */
 export const navLinksSidebar = [
-  { name: "Dashboard",  href: "/admin",        icon: <FaTachometerAlt /> },
-  { name: "Add Items",  href: "/admin/add",    icon: <FaPlus /> },
-  { name: "List Items", href: "/admin/list",   icon: <FaList /> },        // ✅ fixed path
-  { name: "Orders",     href: "/admin/orders", icon: <FaClipboardList /> },// ✅ fixed path
-  { name: "Users",      href: "/admin/users",  icon: <FaUsers /> },
+  { name: "Dashboard", href: "/admin", icon: <FaTachometerAlt /> },
+  { name: "Add Items", href: "/admin/add", icon: <FaPlus /> },
+  { name: "List Items", href: "/admin/list", icon: <FaList /> },
+  { name: "Orders", href: "/admin/orders", icon: <FaClipboardList /> },
+  { name: "Users", href: "/admin/users", icon: <FaUsers /> },
+
+  // Restaurant management
+  { name: "Add Restaurant", href: "/admin/restaurants/add", icon: <FaStore /> },
+  { name: "List Restaurants", href: "/admin/restaurants/list", icon: <FaRegListAlt /> },
 ];
+
 
 /* ---------------- Navbar navigation links (User pages top navbar) ----------- */
 export const navLinksNavbar = [
