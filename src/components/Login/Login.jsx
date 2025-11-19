@@ -11,8 +11,8 @@ import {
   FaCheckCircle,
 } from 'react-icons/fa';
 
-// const url = 'https://quickbite-backend-6dvr.onrender.com';
-const url="http://localhost:4000"
+const url = 'https://quickbite-backend-6dvr.onrender.com';
+// const url="http://localhost:4000"
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
