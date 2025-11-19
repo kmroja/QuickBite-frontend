@@ -11,7 +11,7 @@ const AdminApplications = () => {
   // ✅ Fetch all applications
   const fetchApplications = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("authToken");
       const { data } = await axios.get(`${API_URL}/api/restaurant-applications`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -31,7 +31,7 @@ const AdminApplications = () => {
   // ✅ Approve or Reject Application
   const handleAction = async (id, action) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("authToken");
       const url =
         action === "approve"
           ? `${API_URL}/api/restaurant-applications/${id}/approve`

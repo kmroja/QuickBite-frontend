@@ -60,12 +60,13 @@ const Login = () => {
       if (res.status === 200 && res.data.success && res.data.token && res.data.user) {
         localStorage.setItem('authToken', res.data.token);
 
-        const userData = {
-          id: res.data.user.id || res.data.user._id,
-          name: res.data.user.username || res.data.user.name,
-          email: res.data.user.email,
-          role: res.data.user.role,
-        };
+       const userData = {
+  id: res.data.user._id || res.data.user.id,
+  name: res.data.user.name || res.data.user.username || "User",
+  email: res.data.user.email || "",
+  role: res.data.user.role || "user",
+};
+
         localStorage.setItem('loginData', JSON.stringify(userData));
 
         window.dispatchEvent(new Event('authChange'));
