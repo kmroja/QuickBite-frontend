@@ -11,17 +11,18 @@ const API_URL =
 const RestaurantsList = () => {
   const [restaurants, setRestaurants] = useState([]);
 
-  useEffect(() => {
-    const fetchRestaurants = async () => {
-      try {
-        const res = await axios.get(`${API_URL}/api/restaurants`);
-        setRestaurants(res.data);
-      } catch (err) {
-        console.error("Failed to fetch restaurants", err);
-      }
-    };
-    fetchRestaurants();
-  }, []);
+useEffect(() => {
+  const fetchRestaurants = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/restaurants`);
+      setRestaurants(res.data.restaurants || []);
+    } catch (err) {
+      console.error("Failed to fetch restaurants", err);
+    }
+  };
+  fetchRestaurants();
+}, []);
+
 
   return (
     <>

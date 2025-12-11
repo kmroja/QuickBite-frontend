@@ -35,12 +35,20 @@ const PrivateRoute = ({ children, role }) => {
 
   if (isAuth === null) return <div>Loading...</div>;
 
-  if (!isAuth) return <Navigate to="/login" replace />;
+  // 🔥 NEW
+  if (!isAuth && !role) {
+    return <Navigate to="/login" replace />;
+  }
 
-  // ✅ Role check — support string or array
- if (role && user?.role !== role) {
-  return <Navigate to="/" replace />;
-}
+  // 🔥 For restaurant routes → go to /restaurant/login
+  if (!isAuth && role === "restaurant") {
+    return <Navigate to="/restaurant/login" replace />;
+  }
+
+  // Role check
+  if (role && user?.role !== role) {
+    return <Navigate to="/" replace />;
+  }
 
   return children;
 };

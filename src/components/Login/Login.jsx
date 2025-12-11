@@ -13,6 +13,7 @@ import {
 
 const url = 'https://quickbite-backend-6dvr.onrender.com';
 // const url="http://localhost:4000"
+
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -37,9 +38,7 @@ const Login = () => {
       [name]: type === 'checkbox' ? checked : value,
     }));
 
-  // ✅ Updated regex: allows any valid email (not only Gmail)
-  const isValidEmail = email =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidEmail = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -58,37 +57,49 @@ const Login = () => {
       });
 
       if (res.status === 200 && res.data.success && res.data.token && res.data.user) {
+        
+        // 🔥 Store token
         localStorage.setItem('authToken', res.data.token);
 
-       const userData = {
-  id: res.data.user._id || res.data.user.id,
-  name: res.data.user.name || res.data.user.username || "User",
-  email: res.data.user.email || "",
-  role: res.data.user.role || "user",
-};
+        // 🔥 Store logged in user info
+        const userData = {
+          id: res.data.user._id,
+          name: res.data.user.username || "User",
+          email: res.data.user.email,
+          role: res.data.user.role,   // ⭐ IMPORTANT
+        };
 
         localStorage.setItem('loginData', JSON.stringify(userData));
 
         window.dispatchEvent(new Event('authChange'));
 
-        formData.rememberMe
-          ? localStorage.setItem('rememberMe', JSON.stringify(formData))
-          : localStorage.removeItem('rememberMe');
+        if (formData.rememberMe) {
+          localStorage.setItem('rememberMe', JSON.stringify(formData));
+        } else {
+          localStorage.removeItem('rememberMe');
+        }
 
         setToast({ visible: true, message: 'Login successful!', isError: false });
 
+        // ⭐ ROLE-BASED REDIRECTION (Final correct flow)
         setTimeout(() => {
           setToast({ visible: false, message: '', isError: false });
-          // ✅ Role-based navigation
+
           if (userData.role === 'admin') {
             navigate('/admin');
-          } else {
+          } 
+          else if (userData.role === 'restaurant') {
+            navigate('/restaurant/dashboard');   // ⭐ Restaurant dashboard route
+          } 
+          else {
             navigate('/');
           }
         }, 1000);
+
       } else {
         throw new Error(res.data.message || 'Login failed.');
       }
+
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Login failed.';
       setToast({ visible: true, message: msg, isError: true });
@@ -98,13 +109,8 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f1a12] via-[#142019] to-[#0f1a12] relative">
-      {/* Background glow effects */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-3xl absolute -top-40 -left-40" />
-        <div className="w-[500px] h-[500px] bg-green-500/10 rounded-full blur-3xl absolute bottom-0 right-0" />
-      </div>
 
-      {/* Toast Notification */}
+      {/* Toast */}
       <div
         className={`fixed top-6 right-6 z-50 transition-all duration-300 ${
           toast.visible ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'
@@ -120,7 +126,7 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Login Form */}
+      {/* Login Card */}
       <div className="relative z-10 w-full max-w-md bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
         <h1 className="text-3xl font-bold text-center text-amber-400 mb-6">Sign In</h1>
 
@@ -134,7 +140,7 @@ const Login = () => {
               placeholder="Enter your Email"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full pl-10 pr-4 py-3 rounded-lg bg-gray-900/60 text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-400 focus:outline-none ${
+              className={`w-full pl-10 pr-4 py-3 rounded-lg bg-gray-900/60 text-white ${
                 invalidEmail ? 'border-2 border-red-500' : 'border border-gray-700'
               }`}
               required
@@ -150,7 +156,7 @@ const Login = () => {
               placeholder="Enter your Password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full pl-10 pr-10 py-3 rounded-lg bg-gray-900/60 text-white placeholder-gray-400 border border-gray-700 focus:ring-2 focus:ring-amber-400 focus:outline-none"
+              className="w-full pl-10 pr-10 py-3 rounded-lg bg-gray-900/60 text-white border border-gray-700"
               required
             />
             <button
@@ -169,25 +175,25 @@ const Login = () => {
               name="rememberMe"
               checked={formData.rememberMe}
               onChange={handleChange}
-              className="h-5 w-5 rounded border-gray-600 text-amber-500 focus:ring-amber-500 bg-gray-700"
+              className="h-5 w-5 rounded border-gray-600 text-amber-500 bg-gray-700"
             />
             <span className="text-gray-300 text-sm">Remember me</span>
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             type="submit"
-            className="w-full py-3 bg-gradient-to-r from-amber-500 via-lime-500 to-green-600 text-[#07120a] font-bold rounded-lg flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform shadow-lg"
+            className="w-full py-3 bg-gradient-to-r from-amber-500 via-lime-500 to-green-600 text-[#07120a] font-bold rounded-lg flex items-center justify-center gap-2"
           >
             Sign In <FaArrowRight />
           </button>
         </form>
 
-        {/* Signup Link */}
+        {/* Signup */}
         <div className="text-center mt-6">
           <Link
             to="/signup"
-            className="inline-flex items-center gap-2 text-amber-400 hover:text-amber-500 transition-colors"
+            className="inline-flex items-center gap-2 text-amber-400 hover:text-amber-500"
           >
             <FaUserPlus /> Create New Account
           </Link>

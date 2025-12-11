@@ -21,6 +21,7 @@ const Toast = ({ message, type = "success", onClose }) => (
 
 const OurRestaurants = () => {
   const [restaurants, setRestaurants] = useState([]);
+  const [allRestaurants, setAllRestaurants] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [toast, setToast] = useState(null);
 
@@ -31,7 +32,14 @@ const OurRestaurants = () => {
         const res = await axios.get(
           "https://quickbite-backend-6dvr.onrender.com/api/restaurants"
         );
-        setRestaurants(res.data);
+
+        console.log("API Response:", res.data);
+
+        // ⭐ FIX: Use res.data.restaurants (not res.data)
+        const list = res.data.restaurants || [];
+
+        setRestaurants(list);
+        setAllRestaurants(list);
       } catch (err) {
         console.error("Failed to load restaurants:", err.response?.data || err.message);
         setToast({ message: "Failed to load restaurants", type: "error" });
@@ -43,21 +51,32 @@ const OurRestaurants = () => {
   // Search handler
   const handleSearch = (e) => {
     e.preventDefault();
-    // Optional: filter restaurants by name or cuisine
-    const filtered = restaurants.filter((r) =>
+
+    if (!searchQuery.trim()) {
+      setRestaurants(allRestaurants);
+      return;
+    }
+
+    const filtered = allRestaurants.filter((r) =>
       r.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    if (filtered.length) setRestaurants(filtered);
+
+    if (filtered.length > 0) {
+      setRestaurants(filtered);
+    } else {
+      setToast({ message: "No restaurants found!", type: "error" });
+      setRestaurants([]);
+    }
   };
 
   return (
     <div className="bg-gradient-to-br from-[#fefae0] via-[#e9edc9] to-[#fefae0] min-h-screen py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Toast Notification */}
+        
         {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
         {/* Search */}
-        <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto mb-8 group">
+        <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto mb-10 group">
           <div className="flex items-center bg-green-900/30 rounded-xl border-2 border-lime-500/30 shadow-lg hover:border-lime-400/50 transition-all duration-300">
             <div className="pl-6 pr-3 py-4">
               <FaSearch className="text-xl text-lime-300/80" />
@@ -80,38 +99,43 @@ const OurRestaurants = () => {
 
         {/* Restaurant Cards */}
         <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
-          {restaurants.map((restaurant) => (
-            <Link
-              to={`/restaurants/${restaurant._id}`}
-              key={restaurant._id}
-              className="relative bg-green-100/30 rounded-2xl overflow-hidden border border-green-800/20 backdrop-blur-sm flex flex-col transition-all duration-500 hover:scale-105 hover:shadow-lg"
-            >
-              {/* Image */}
-              <div className="relative h-48 sm:h-56 md:h-60 flex items-center justify-center bg-black/5">
-                <img
-                  loading="lazy"
-                  src={restaurant.imageUrl || restaurant.image}
-                  alt={restaurant.name}
-                  className="max-h-full max-w-full object-contain transition-all duration-700"
-                />
-              </div>
+          {restaurants.length > 0 ? (
+            restaurants.map((restaurant) => (
+              <Link
+                to={`/restaurants/${restaurant._id}`}
+                key={restaurant._id}
+                className="relative bg-green-100/30 rounded-2xl overflow-hidden border border-green-800/20 backdrop-blur-sm flex flex-col transition-all duration-500 hover:scale-105 hover:shadow-xl"
+              >
+                <div className="relative h-48 sm:h-56 md:h-60 flex items-center justify-center bg-black/5">
+                  <img
+                    loading="lazy"
+                    src={restaurant.imageUrl || restaurant.image}
+                    alt={restaurant.name}
+                    className="max-h-full max-w-full object-contain transition-all duration-700"
+                  />
+                </div>
 
-              {/* Info */}
-              <div className="p-4 sm:p-6 flex flex-col flex-grow">
-                <h3 className="text-xl sm:text-2xl mb-2 font-dancingscript text-green-800">
-                  {restaurant.name}
-                </h3>
-                <p className="text-green-900/80 text-xs sm:text-sm mb-2 font-cinzel leading-relaxed">
-                  {restaurant.description}
-                </p>
-                {restaurant.cuisine && (
-                  <span className="inline-block bg-green-200/50 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
-                    {restaurant.cuisine}
-                  </span>
-                )}
-              </div>
-            </Link>
-          ))}
+                <div className="p-4 sm:p-6 flex flex-col flex-grow">
+                  <h3 className="text-xl sm:text-2xl font-bold text-green-900">
+                    {restaurant.name}
+                  </h3>
+                  <p className="text-sm text-green-700 mt-2">
+                    {restaurant.description?.slice(0, 60)}...
+                  </p>
+
+                  <div className="mt-4">
+                    <span className="inline-block py-1 px-3 text-sm rounded-lg bg-lime-200 text-green-900 font-semibold">
+                      {restaurant.cuisineType || restaurant.cuisine || "Cuisine"}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="text-center text-xl text-green-900 col-span-full">
+              No restaurants available yet.
+            </div>
+          )}
         </div>
       </div>
     </div>

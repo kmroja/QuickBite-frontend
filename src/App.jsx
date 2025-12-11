@@ -18,16 +18,20 @@ import VerifyPaymentPage from "./pages/VerifyPaymentPage/VerifyPaymentPage";
 // 🧑‍💼 Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AddItems from "./pages/admin/AddItems/AddItems";
-import Orders from "./pages/admin/Orders/Orders";
+import AddRestaurant from "./pages/admin/restaurants/AddRestaurant";
+import ListRestaurants from "./pages/admin/restaurants/ListRestaurantsAdmin";
+
 import ListItems from "./pages/admin/ListItems/ListItems";
 import AdminUsers from "./pages/admin/Users/AdminUsers.jsx";
 
 // 🍽️ Restaurants (Public + Admin)
 import RestaurantsList from "./pages/Restaurants/RestaurantsList";
 import RestaurantDetails from "./pages/Restaurants/RestaurantDetails";
-import AddRestaurant from "./pages/admin/AddRestaurant/AddRestaurant";     // ✅ FIXED
-import ListRestaurants from "./pages/admin/ListRestaurant/ListRestaurants"; // ✅ FIXED
+import RestaurantLogin from "./pages/Restaurants/RestaurantLogin";
+import RestaurantDashboard from "./pages/Restaurants/RestaurantDashboard";
 
+// ✅ FIXED
+// import Orders from "./pages/Restaurants/Orders";
 // 🔐 Common components
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import AdminToggle from "./components/AdminToggle/AdminToggle";
@@ -49,7 +53,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/menu" element={<Menu />} />
+        {/* <Route path="/menu" element={<Menu />} /> */}
 
         {/* 💳 Payment */}
         <Route path="/myorder/verify" element={<VerifyPaymentPage />} />
@@ -145,16 +149,26 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/admin/orders"
           element={
             <PrivateRoute role="admin">
               <Orders />
             </PrivateRoute>
           }
-        />
+        /> */}
         {/* 🌟 Public Restaurant Apply Page */}
 <Route path="/apply-restaurant" element={<ApplyRestaurant />} />
+<Route path="/restaurant/login" element={<RestaurantLogin />} />
+
+<Route
+  path="/restaurant/dashboard"
+  element={
+    <PrivateRoute role="restaurant">
+      <RestaurantDashboard />
+    </PrivateRoute>
+  }
+/>
 
 {/* 🧑‍💼 Admin — Restaurant Applications */}
 <Route
