@@ -22,37 +22,34 @@ const CheckoutPage = () => {
   const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
   // Handle redirect back from payment gateway
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const paymentStatus = params.get('payment_status');
-    const sessionId = params.get('session_id');
+useEffect(() => {
+  const params = new URLSearchParams(location.search);
+  const paymentStatus = params.get("payment_status");
+  const sessionId = params.get("session_id");
 
-    if (paymentStatus) {
-      setLoading(true);
-      if (paymentStatus === 'success' && sessionId) {
-        // Confirm the payment and create order on the backend
-        axios.post(
-          'https://quickbite-backend-6dvr.onrender.com/api/orders/confirm',
-          { sessionId },
-          { headers: authHeaders }
-        )
-          .then(({ data }) => {
-            // Only clear cart when payment truly succeeded
-            clearCart();
-            navigate('/myorder', { state: { order: data.order } });
-          })
-          .catch(err => {
-            console.error('Payment confirmation error:', err);
-            setError('Payment confirmation failed. Please contact support.');
-          })
-          .finally(() => setLoading(false));
-      } else if (paymentStatus === 'cancel') {
-        // User cancelled or payment failed
-        setError('Payment was cancelled or failed. Your cart remains intact.');
-        setLoading(false);
-      }
-    }
-  }, [location.search, clearCart, navigate, authHeaders]);
+  if (paymentStatus === "success" && sessionId) {
+    setLoading(true);
+
+    axios
+      .get(
+        `https://quickbite-backend-6dvr.onrender.com/api/orders/confirm?session_id=${sessionId}`,
+        { headers: authHeaders }
+      )
+      .then(({ data }) => {
+        clearCart();
+        navigate("/myorder", { state: { order: data.order } });
+      })
+      .catch((err) => {
+        console.error("Payment confirmation error:", err);
+        setError("Payment confirmation failed. Please contact support.");
+      })
+      .finally(() => setLoading(false));
+  }
+
+  if (paymentStatus === "cancel") {
+    setError("Payment was cancelled.");
+  }
+}, [location.search]);
 
   const handleInputChange = e => {
     const { name, value } = e.target;
