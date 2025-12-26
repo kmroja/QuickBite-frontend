@@ -4,7 +4,8 @@ import axios from "axios";
 import { useCart } from "../../CartContext/CartContext";
 import { FaPlus, FaCheck } from "react-icons/fa";
 
-const API = "https://quickbite-backend-6dvr.onrender.com";
+// ✅ USE ENV VARIABLE (IMPORTANT)
+const API = import.meta.env.VITE_API_URL;
 
 const UserRestaurantMenu = () => {
   const { id } = useParams();
@@ -14,16 +15,18 @@ const UserRestaurantMenu = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(`${API}/api/restaurants/${id}`) // ✅ public API
-      .then((res) => {
+    const fetchRestaurant = async () => {
+      try {
+        const res = await axios.get(`${API}/api/restaurants/${id}`);
         setRestaurant(res.data.restaurant);
-        setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("User menu fetch error:", err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchRestaurant();
   }, [id]);
 
   const buildImageUrl = (path) => {
@@ -63,7 +66,7 @@ const UserRestaurantMenu = () => {
 
         {/* MENU GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {restaurant.menu.map((item) => {
+          {restaurant.menu?.map((item) => {
             const added = isInCart(item._id);
 
             return (
@@ -71,7 +74,6 @@ const UserRestaurantMenu = () => {
                 key={item._id}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition duration-300 overflow-hidden flex flex-col group"
               >
-                {/* IMAGE */}
                 <div className="relative h-44 overflow-hidden">
                   <img
                     src={buildImageUrl(item.imageUrl)}
@@ -83,7 +85,6 @@ const UserRestaurantMenu = () => {
                   </span>
                 </div>
 
-                {/* CONTENT */}
                 <div className="p-4 flex flex-col flex-grow">
                   <h3 className="text-lg font-semibold text-gray-800">
                     {item.name}
@@ -99,15 +100,14 @@ const UserRestaurantMenu = () => {
                     </p>
 
                     <button
-  onClick={() => addToCart(item, 1)}
-  disabled={added}
-  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition ${
-    added
-      ? "bg-green-200 text-green-800 cursor-not-allowed"
-      : "bg-green-600 text-white hover:bg-green-700 active:scale-95"
-  }`}
->
-
+                      onClick={() => addToCart(item, 1)}
+                      disabled={added}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition ${
+                        added
+                          ? "bg-green-200 text-green-800 cursor-not-allowed"
+                          : "bg-green-600 text-white hover:bg-green-700 active:scale-95"
+                      }`}
+                    >
                       {added ? (
                         <>
                           <FaCheck /> Added
@@ -124,7 +124,7 @@ const UserRestaurantMenu = () => {
             );
           })}
 
-          {restaurant.menu.length === 0 && (
+          {restaurant.menu?.length === 0 && (
             <p className="col-span-full text-center text-gray-500">
               No menu items available
             </p>
