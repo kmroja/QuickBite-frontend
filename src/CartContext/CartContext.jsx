@@ -79,13 +79,21 @@ export const CartProvider = ({ children }) => {
       const res = await axios.get(`${API_URL}/api/cart`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      dispatch({ type: "HYDRATE_CART", payload: res.data });
-      localStorage.setItem("cart", JSON.stringify(res.data));
+    dispatch({
+  type: "HYDRATE_CART",
+  payload: res.data,
+});
+
+
+     
       setUserId(currentUser);
     } catch (err) {
-      console.error("Fetch cart failed:", err.response?.data || err.message);
-      setToast({ message: "Failed to load cart", type: "error" });
-    }
+  console.warn("Cart fetch skipped:", err.message);
+  dispatch({ type: "CLEAR_CART" });
+  localStorage.removeItem("cart");
+  // ❌ NO toast here
+}
+
   }, []);
 
   // Load cart on mount
@@ -115,26 +123,31 @@ export const CartProvider = ({ children }) => {
   }, [cartItems]);
 
   // ----- Actions -----
-  const addToCart = useCallback(async (item, qty = 1) => {
+const addToCart = useCallback(
+  async (item, qty = 1) => {
     const token = localStorage.getItem("authToken");
     if (!token) {
       setToast({ message: "Login to add items", type: "error" });
       return;
     }
 
-    try {
-      const res = await axios.post(
-        `${API_URL}/api/cart`,
-        { itemId: item._id, quantity: qty },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      dispatch({ type: "ADD_ITEM", payload: res.data });
-      setToast({ message: "Added to cart", type: "success" });
-    } catch (err) {
-      console.error("Add to cart failed:", err);
-      setToast({ message: "Failed to add item", type: "error" });
+    if (!item || !item._id) {
+      console.error("Invalid item passed to addToCart:", item);
+      return;
     }
-  }, []);
+
+    const res = await axios.post(
+      `${API_URL}/api/cart`,
+      { itemId: item._id, quantity: qty },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    dispatch({ type: "ADD_ITEM", payload: res.data });
+  },
+  [dispatch]
+);
+
+
 
   const updateQuantity = useCallback(async (_id, qty) => {
     const token = localStorage.getItem("authToken");

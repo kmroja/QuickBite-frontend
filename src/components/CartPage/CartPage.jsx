@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { FaMinus, FaPlus, FaTrash, FaTimes } from 'react-icons/fa';
 
 const API_URL = 'https://quickbite-backend-6dvr.onrender.com';
+// const API_URL = 'http://localhost:4000'
 
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, totalAmount } = useCart();

@@ -7,7 +7,7 @@ import { GiChefToque } from "react-icons/gi";
 import { FaUtensils, FaList, FaShoppingBag, FaStore } from "react-icons/fa";
 
 const API_URL = "https://quickbite-backend-6dvr.onrender.com";
-
+// const API_URL = "http://localhost:4000";
 const RestaurantDashboard = () => {
   const location = useLocation();
   const [restaurant, setRestaurant] = useState(null);
@@ -66,6 +66,7 @@ const RestaurantDashboard = () => {
         }
       } catch (err) {
         console.error("Dashboard Error:", err);
+        setRestaurant(null);
       } finally {
         setLoading(false);
       }

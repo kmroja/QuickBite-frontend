@@ -1,209 +1,298 @@
-// src/pages/Restaurants/RestaurantMenu.jsx
-import React, { useEffect, useMemo, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Navbar from "../../components/Navbar/Navbar";
-import Footer from "../../components/Footer/Footer";
-import { useCart } from "../../CartContext/CartContext";
-import { FaSearch, FaStar, FaPlus, FaMinus } from "react-icons/fa";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://quickbite-backend-6dvr.onrender.com";
+const API = "https://quickbite-backend-6dvr.onrender.com";
 
-const Toast = ({ message, type = "success", onClose }) => (
-  <div className={`fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-semibold ${type === "success" ? "bg-green-600" : "bg-red-500"}`}>
-    {message}
-    <button onClick={onClose} className="ml-3 font-bold">✕</button>
-  </div>
-);
+const MenuManagement = () => {
+  const [menu, setMenu] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-const RestaurantMenu = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { cartItems: rawCart, addToCart, updateQuantity, removeFromCart } = useCart();
-  const cartItems = rawCart.filter(ci => ci.item);
-  const [restaurant, setRestaurant] = useState(null);
-  const [menuItems, setMenuItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All");
-  const [toast, setToast] = useState(null);
-  const [user, setUser] = useState(null); // logged-in user
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    price: "",
+    category: "",
+  });
 
+  const [image, setImage] = useState(null);
+
+  const restaurantId = localStorage.getItem("restaurantId");
+  const token = localStorage.getItem("authToken");
+
+  /* -------------------------------- */
+  /* Fetch Menu */
+  /* -------------------------------- */
   useEffect(() => {
-    // read token -> verify user role (optional)
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      axios.get(`${API_URL}/api/user/verify`, { headers: { Authorization: `Bearer ${token}` } })
-        .then(res => setUser(res.data.user || res.data.user)) // supports different verify payload shapes
-        .catch(() => setUser(null));
+    if (!restaurantId) {
+      alert("Restaurant ID missing. Please login again.");
+      return;
     }
-  }, []);
+    fetchMenu();
+  }, [restaurantId]);
 
-  useEffect(() => {
-    const fetchAll = async () => {
-      setLoading(true);
-      try {
-        // 1) restaurant details (with menu populated if backend sends it)
-        const r = await axios.get(`${API_URL}/api/restaurants/${id}`);
-        const rest = r.data.restaurant || r.data; // handle both shapes
-        setRestaurant(rest);
-
-        // 2) menu — prefer populated menu, fallback to items endpoint
-        if (rest?.menu && Array.isArray(rest.menu) && rest.menu.length > 0) {
-          setMenuItems(rest.menu);
-        } else {
-          const itemsRes = await axios.get(`${API_URL}/api/items/restaurant/${id}`);
-          setMenuItems(itemsRes.data.items || itemsRes.data);
-        }
-      } catch (err) {
-        console.error("Failed to load restaurant/menu:", err.response?.data || err.message);
-        setToast({ message: "Failed to load restaurant", type: "error" });
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAll();
-  }, [id]);
-
-  const categories = useMemo(() => {
-    if (!menuItems || !menuItems.length) return ["All"];
-    const cats = Array.from(new Set(menuItems.map(i => i.category || "Uncategorized")));
-    return ["All", ...cats];
-  }, [menuItems]);
-
-  const filteredMenu = useMemo(() => {
-    if (!menuItems) return [];
-    return menuItems.filter(item => {
-      const byCategory = activeCategory === "All" || (item.category || "Uncategorized") === activeCategory;
-      const bySearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
-      return byCategory && bySearch;
+ const fetchMenu = async () => {
+  try {
+    const res = await axios.get(`${API}/api/items/my-items`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
-  }, [menuItems, activeCategory, searchQuery]);
 
-  const getCartEntry = (itemId) => cartItems.find(ci => ci.item?._id === itemId);
-  const getQuantity = (itemId) => getCartEntry(itemId)?.quantity ?? 0;
+    setMenu(res.data.items || []);
+  } catch (err) {
+    console.error(
+      "Fetch menu error:",
+      err.response?.data || err
+    );
+  }
+};
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading menu…</div>;
 
+  /* -------------------------------- */
+  /* Submit Add / Update */
+  /* -------------------------------- */
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!restaurantId) {
+    alert("Restaurant ID missing. Please login again.");
+    return;
+  }
+
+  if (!form.category.trim()) {
+    alert("Category is required");
+    return;
+  }
+
+  const data = new FormData();
+  data.append("name", form.name);
+  data.append("description", form.description);
+  data.append("price", form.price);
+  data.append("category", form.category); // ✅ MUST EXIST
+  data.append("restaurantId", restaurantId); // ✅ REQUIRED
+  if (image) data.append("image", image);
+
+  // 🔍 DEBUG ONCE
+  for (let pair of data.entries()) {
+    console.log(pair[0], pair[1]);
+  }
+
+  setLoading(true);
+
+  try {
+    if (editingId) {
+      await axios.put(`${API}/api/items/${editingId}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } else {
+      await axios.post(`${API}/api/items`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
+
+    resetForm();
+    fetchMenu();
+  } catch (err) {
+    console.error("Submit error:", err.response?.data || err);
+    alert(err.response?.data?.message || "Failed to save menu item");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  /* -------------------------------- */
+  /* Edit */
+  /* -------------------------------- */
+  const handleEdit = (item) => {
+    setEditingId(item._id);
+    setForm({
+      name: item.name,
+      description: item.description || "",
+      price: item.price,
+      category: item.category || "",
+    });
+    setImage(null);
+  };
+
+  /* -------------------------------- */
+  /* Delete */
+  /* -------------------------------- */
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
+
+    try {
+      await axios.delete(`${API}/api/items/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      fetchMenu();
+    } catch (err) {
+      console.error("Delete error:", err);
+    }
+  };
+
+  /* -------------------------------- */
+  /* Reset */
+  /* -------------------------------- */
+  const resetForm = () => {
+    setEditingId(null);
+    setForm({
+      name: "",
+      description: "",
+      price: "",
+      category: "",
+    });
+    setImage(null);
+  };
+
+  /* -------------------------------- */
+  /* UI */
+  /* -------------------------------- */
   return (
-    <>
-      <Navbar />
-      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-green-700 mb-8">
+          Restaurant Menu Management
+        </h1>
 
-      <div className="min-h-screen bg-gradient-to-br from-[#fefae0] via-[#e9edc9] to-[#fefae0] py-10 px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          {restaurant ? (
-            <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-              <img src={restaurant.image || "/default-restaurant.jpg"} alt={restaurant.name} className="w-full md:w-72 h-56 object-cover rounded-xl shadow" />
-              <div className="md:col-span-2">
-                <h1 className="text-3xl font-bold text-green-800">{restaurant.name}</h1>
-                <p className="text-sm text-green-700 mt-2">{restaurant.description}</p>
-                <div className="mt-4 flex flex-wrap gap-3 items-center">
-                  <div className="flex items-center gap-2 bg-green-50 px-3 py-1 rounded-full">
-                    <FaStar className="text-yellow-400" />
-                    <span className="font-semibold">{restaurant.rating || "4.5"}</span>
-                    <span className="text-xs text-gray-500">({restaurant.totalReviews || 0} reviews)</span>
-                  </div>
-                  <div className="text-sm text-gray-600">📍 {restaurant.address || restaurant.location || "Address not available"}</div>
-                  <div className="ml-auto">
-                    {/* If logged in as that restaurant owner show Manage link */}
-                    {user && user.role === "restaurant" && String(user._id) === String(restaurant.owner?._id || restaurant.owner) && (
-                      <Link to="/restaurant/dashboard" className="px-3 py-2 bg-green-600 text-white rounded-lg">Manage Menu</Link>
-                    )}
-                  </div>
+        {/* FORM */}
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-2xl shadow-lg p-6 mb-10"
+        >
+          <h2 className="text-xl font-semibold mb-4">
+            {editingId ? "Edit Menu Item" : "Add New Menu Item"}
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              placeholder="Item Name"
+              value={form.name}
+              onChange={(e) =>
+                setForm({ ...form, name: e.target.value })
+              }
+              className="border rounded-lg px-4 py-2"
+              required
+            />
+
+            <input
+              placeholder="Price (₹)"
+              type="number"
+              value={form.price}
+              onChange={(e) =>
+                setForm({ ...form, price: e.target.value })
+              }
+              className="border rounded-lg px-4 py-2"
+              required
+            />
+
+            <input
+              placeholder="Category (Dessert / Pizza / Drinks)"
+              value={form.category}
+              onChange={(e) =>
+                setForm({ ...form, category: e.target.value })
+              }
+              className="border rounded-lg px-4 py-2 md:col-span-2"
+              required
+            />
+
+            <textarea
+              placeholder="Description"
+              value={form.description}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+              className="border rounded-lg px-4 py-2 md:col-span-2"
+              rows="3"
+            />
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+              className="border rounded-lg px-4 py-2 md:col-span-2"
+              required={!editingId}
+            />
+          </div>
+
+          <div className="flex gap-4 mt-6">
+            <button
+              disabled={loading}
+              className="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold"
+            >
+              {loading
+                ? "Saving..."
+                : editingId
+                ? "Update Item"
+                : "Add Item"}
+            </button>
+
+            {editingId && (
+              <button
+                type="button"
+                onClick={resetForm}
+                className="bg-gray-300 px-6 py-2 rounded-lg"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </form>
+
+        {/* MENU LIST */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {menu.map((item) => (
+            <div
+              key={item._id}
+              className="bg-white rounded-xl shadow"
+            >
+              <img
+                src={`${API}/uploads/${item.imageUrl}`}
+                alt={item.name}
+                className="h-40 w-full object-cover rounded-t-xl"
+              />
+
+              <div className="p-4">
+                <h3 className="font-bold text-lg">{item.name}</h3>
+                <p className="text-sm text-gray-600">{item.category}</p>
+                <p className="mt-2 font-semibold text-green-700">
+                  ₹{item.price}
+                </p>
+
+                <div className="flex justify-between mt-4">
+                  <button
+                    onClick={() => handleEdit(item)}
+                    className="text-blue-600 font-semibold"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(item._id)}
+                    className="text-red-600 font-semibold"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
-          ) : (
-            <div className="text-center text-gray-600">Restaurant not found</div>
-          )}
+          ))}
 
-          {/* Controls */}
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-6">
-            <form onSubmit={(e) => e.preventDefault()} className="flex items-center gap-3 w-full md:w-2/3">
-              <label className="relative w-full">
-                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search menu items..." className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-green-300" />
-                <button onClick={() => { setSearchQuery(""); setActiveCategory("All"); }} type="button" className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500">Clear</button>
-              </label>
-            </form>
-
-            <div className="flex gap-2 flex-wrap">
-              {categories.map(cat => (
-                <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-3 py-2 rounded-full text-sm ${activeCategory === cat ? "bg-green-600 text-white" : "bg-green-100 text-green-800"}`}>
-                  {cat}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Menu Grid */}
-          {filteredMenu.length === 0 ? (
-            <div className="text-center py-20 text-lg text-green-900">No menu items available.</div>
-          ) : (
-            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredMenu.map(item => {
-                const cartEntry = getCartEntry(item._id);
-                const quantity = getQuantity(item._1d); // fallback if typo
-                const qty = getQuantity(item._id);
-
-                return (
-                  <div key={item._id} className="bg-white rounded-2xl shadow p-4 flex flex-col">
-                    <div className="h-44 bg-gray-50 rounded-xl flex items-center justify-center overflow-hidden mb-3">
-                      <img src={item.imageUrl || "/default-food.jpg"} alt={item.name} className="object-cover w-full h-full" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-green-900">{item.name}</h3>
-                      <p className="text-sm text-green-700 mt-1 line-clamp-3">{item.description}</p>
-                    </div>
-
-                    <div className="mt-4 flex items-center justify-between">
-                      <div>
-                        <div className="text-lg font-bold text-green-800">₹{Number(item.price).toFixed(2)}</div>
-                        <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
-                          <FaStar className="text-yellow-400" /> <span>{(item.rating || 0).toFixed(1)}</span>
-                        </div>
-                      </div>
-
-                      {/* Cart control */}
-                      <div>
-                        {getQuantity(item._id) > 0 ? (
-                          <div className="flex items-center gap-2">
-                            <button onClick={() => {
-                              const entry = getCartEntry(item._id);
-                              if (!entry) return;
-                              if (entry.quantity <= 1) removeFromCart(entry._id);
-                              else updateQuantity(entry._id, entry.quantity - 1);
-                            }} className="p-2 rounded-full bg-green-100">
-                              <FaMinus />
-                            </button>
-
-                            <div className="min-w-[36px] text-center">{getQuantity(item._id)}</div>
-
-                            <button onClick={() => {
-                              const entry = getCartEntry(item._id);
-                              if (!entry) return addToCart(item, 1);
-                              updateQuantity(entry._id, entry.quantity + 1);
-                            }} className="p-2 rounded-full bg-green-600 text-white">
-                              <FaPlus />
-                            </button>
-                          </div>
-                        ) : (
-                          <button onClick={() => addToCart(item, 1)} className="px-4 py-2 rounded-full bg-green-600 text-white">Add</button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          {menu.length === 0 && (
+            <p className="col-span-full text-center text-gray-500">
+              No menu items added yet
+            </p>
           )}
         </div>
       </div>
-
-      <Footer />
-    </>
+    </div>
   );
 };
 
-export default RestaurantMenu;
+export default MenuManagement;
