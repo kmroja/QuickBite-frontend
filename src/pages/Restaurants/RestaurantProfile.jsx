@@ -17,8 +17,8 @@ import {
   CheckBadgeIcon,
 } from "@heroicons/react/24/outline";
 
-const API_URL = "http://localhost:4000";
-
+// const API_URL = "http://localhost:4000";
+const API_URL = "https://quickbite-backend-6dvr.onrender.com";
 const RestaurantProfile = () => {
   const location = useLocation();
   const token = localStorage.getItem("authToken");
