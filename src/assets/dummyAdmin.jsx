@@ -24,11 +24,7 @@ export const navLinksSidebar = [
     icon: <FaFileAlt />,
   },
 
-  {
-    name: "Orders",
-    href: "/admin/orders",
-    icon: <FaClipboardList />,
-  },
+ 
 
   {
     name: "Users",
