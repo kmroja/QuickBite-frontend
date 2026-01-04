@@ -1,39 +1,56 @@
 // assets/dummyAdmin.jsx
+// assets/dummyAdmin.jsx
 import React from "react";
 import {
   FaUtensils,
   FaUsers,
-  FaShoppingCart,
   FaClipboardList,
   FaTachometerAlt,
-  FaPlus,
-  FaList,
-  FaStore,
   FaRegListAlt,
+  FaFileAlt, // ✅ NEW ICON FOR APPLICATIONS
 } from "react-icons/fa";
 
+/* ---------------- Sidebar navigation links (Admin) ---------------- */
 export const navLinksSidebar = [
-  { name: "Dashboard", href: "/admin", icon: <FaTachometerAlt /> },
-  { name: "Add Items", href: "/admin/add", icon: <FaPlus /> },
-  { name: "List Items", href: "/admin/list", icon: <FaList /> },
-  { name: "Orders", href: "/admin/orders", icon: <FaClipboardList /> },
-  { name: "Users", href: "/admin/users", icon: <FaUsers /> },
+  {
+    name: "Dashboard",
+    href: "/admin",
+    icon: <FaTachometerAlt />,
+  },
 
-  // Restaurant management
-  { name: "Add Restaurant", href: "/admin/restaurants/add", icon: <FaStore /> },
-  { name: "List Restaurants", href: "/admin/restaurants/list", icon: <FaRegListAlt /> },
+  {
+    name: "Applications", // ✅ FIXED
+    href: "/admin/applications", // ✅ REQUIRED URL
+    icon: <FaFileAlt />,
+  },
+
+  {
+    name: "Orders",
+    href: "/admin/orders",
+    icon: <FaClipboardList />,
+  },
+
+  {
+    name: "Users",
+    href: "/admin/users",
+    icon: <FaUsers />,
+  },
+
+  {
+    name: "Restaurants",
+    href: "/admin/restaurants/list",
+    icon: <FaRegListAlt />,
+  },
 ];
 
-
-/* ---------------- Navbar navigation links (User pages top navbar) ----------- */
+/* ---------------- Navbar navigation links (Top Navbar) ---------------- */
 export const navLinksNavbar = [
-  { name: "Dashboard",  href: "/admin",        icon: <FaTachometerAlt /> },
-  { name: "Home",   href: "/",       icon: <FaUtensils /> },
-  { name: "Add Items",  href: "/admin/",    icon: <FaPlus /> },
-  { name: "List Items", href: "/admin/list",   icon: <FaList /> },        // ✅ fixed path
-  { name: "Orders",     href: "/admin/orders", icon: <FaClipboardList /> },
-  
+  { name: "Dashboard", href: "/admin", icon: <FaTachometerAlt /> },
+  { name: "Home", href: "/", icon: <FaUtensils /> },
+  { name: "Applications", href: "/admin/applications", icon: <FaFileAlt /> },
+  { name: "Orders", href: "/admin/orders", icon: <FaClipboardList /> },
 ];
+
 
 /* ---------------- General page styles -------------------------------------- */
 export const styles = {

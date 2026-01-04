@@ -20,7 +20,7 @@ const CheckoutPage = () => {
   // Grab token from localStorage
   const token = localStorage.getItem('authToken');
   const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
-
+ const restaurantId = cartItems[0]?.item?.restaurantId;
   // Handle redirect back from payment gateway
 useEffect(() => {
   const params = new URLSearchParams(location.search);
@@ -62,57 +62,59 @@ const handleSubmit = async e => {
   setError(null);
 
   if (!cartItems.length) {
-    setError("Your cart is empty. Please add items before checkout.");
+    setError("Your cart is empty.");
     setLoading(false);
     return;
   }
 
-  const subtotal = Number(totalAmount.toFixed(2));
+  // ✅ FORCE NUMBER
+  const subtotal = Number(totalAmount);
   const tax = Number((subtotal * 0.05).toFixed(2));
+  const total = Number((subtotal + tax).toFixed(2));
 
   const payload = {
     ...formData,
+
+    // ✅ IMPORTANT
     subtotal,
     tax,
-    total: Number((subtotal + tax).toFixed(2)),
+    total,
+
+    // ✅ STRIPE NEEDS INTEGER (PAISE)
+    amount: Math.round(total * 100),
+
     items: cartItems.map(ci => ({
-      item: typeof ci.item === "object" ? ci.item._id : ci.item,
-      quantity: ci.quantity,
-      price: ci.item?.price || ci.price || 0
+      item: {
+        _id: ci.item._id,
+        name: ci.item.name,
+        price: Number(ci.item.price),
+        imageUrl: ci.item.imageUrl || "",
+        restaurantId: ci.item.restaurantId
+      },
+      quantity: Number(ci.quantity)
     }))
   };
 
   try {
-    if (formData.paymentMethod === 'online') {
-      const { data } = await axios.post(
-        'https://quickbite-backend-6dvr.onrender.com/api/orders',
-        payload,
-        { headers: authHeaders }
-      );
+    const { data } = await axios.post(
+      "https://quickbite-backend-6dvr.onrender.com/api/orders",
+      payload,
+      { headers: authHeaders }
+    );
 
-      if (data?.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error("Stripe URL not received");
-      }
+    if (formData.paymentMethod === "online" && data.url) {
+      window.location.href = data.url;
     } else {
-      const { data } = await axios.post(
-        'https://quickbite-backend-6dvr.onrender.com/api/orders',
-        payload,
-        { headers: authHeaders }
-      );
-
       clearCart();
-      navigate('/myorder', { state: { order: data.order } });
+      navigate("/myorder", { state: { order: data.order } });
     }
   } catch (err) {
-    console.error('Order submission error:', err);
-    setError(err.response?.data?.message || err.message);
+    console.error("Order submission error:", err);
+    setError(err.response?.data?.message || "Order failed");
   } finally {
     setLoading(false);
   }
 };
-
 
 
   return (

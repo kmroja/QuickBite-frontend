@@ -16,15 +16,7 @@ const Home = () => {
       <AboutHome />
       <OurMenuHome />
 
-      {/* 🔗 Explore Restaurants Button */}
-      <div className="text-center my-10">
-        <Link
-          to="/restaurants"
-          className="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 transition-all"
-        >
-          Explore Restaurants
-        </Link>
-      </div>
+     
 
       <Footer />
     </>

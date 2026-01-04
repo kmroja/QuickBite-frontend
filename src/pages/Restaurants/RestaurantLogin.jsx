@@ -3,8 +3,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-// const API_URL = "https://quickbite-backend-6dvr.onrender.com";
-const API_URL = "http://localhost:4000";
+const API_URL = "https://quickbite-backend-6dvr.onrender.com";
+// const API_URL = "http://localhost:4000";
 const RestaurantLogin = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });

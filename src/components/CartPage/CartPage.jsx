@@ -30,7 +30,7 @@ const CartPage = () => {
           <div className="text-center">
             <p className="text-green-800 text-xl mb-4">Your cart is empty</p>
             <Link
-              to="/menu"
+              to="/restaurants"
               className="bg-green-200 px-6 py-2 rounded-full font-cinzel text-sm uppercase hover:bg-green-300 transition duration-300 text-green-900 inline-flex items-center gap-2"
             >
               Browse All Items

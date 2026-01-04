@@ -16,14 +16,19 @@ const url = 'https://quickbite-backend-6dvr.onrender.com';
 
 const Login = () => {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false,
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', isError: false });
   const [invalidEmail, setInvalidEmail] = useState(false);
+
+  // 🔥 NEW (dropdown only)
+  const [openDropdown, setOpenDropdown] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('rememberMe');
@@ -48,6 +53,7 @@ const Login = () => {
       setToast({ visible: true, message: 'Please enter a valid email address!', isError: true });
       return;
     }
+
     setInvalidEmail(false);
 
     try {
@@ -57,20 +63,16 @@ const Login = () => {
       });
 
       if (res.status === 200 && res.data.success && res.data.token && res.data.user) {
-        
-        // 🔥 Store token
         localStorage.setItem('authToken', res.data.token);
 
-        // 🔥 Store logged in user info
         const userData = {
           id: res.data.user._id,
           name: res.data.user.username || "User",
           email: res.data.user.email,
-          role: res.data.user.role,   // ⭐ IMPORTANT
+          role: res.data.user.role,
         };
 
         localStorage.setItem('loginData', JSON.stringify(userData));
-
         window.dispatchEvent(new Event('authChange'));
 
         if (formData.rememberMe) {
@@ -81,7 +83,6 @@ const Login = () => {
 
         setToast({ visible: true, message: 'Login successful!', isError: false });
 
-        // ⭐ ROLE-BASED REDIRECTION (Final correct flow)
         setTimeout(() => {
           setToast({ visible: false, message: '', isError: false });
 
@@ -89,17 +90,15 @@ const Login = () => {
             navigate('/admin');
           } 
           else if (userData.role === 'restaurant') {
-            navigate('/restaurant/dashboard');   // ⭐ Restaurant dashboard route
+            navigate('/restaurant/dashboard');
           } 
           else {
             navigate('/');
           }
         }, 1000);
-
       } else {
         throw new Error(res.data.message || 'Login failed.');
       }
-
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Login failed.';
       setToast({ visible: true, message: msg, isError: true });
@@ -121,16 +120,19 @@ const Login = () => {
             toast.isError ? 'bg-red-600 text-white' : 'bg-green-600 text-white'
           }`}
         >
-          <FaCheckCircle className="flex-shrink-0" />
+          <FaCheckCircle />
           <span>{toast.message}</span>
         </div>
       </div>
 
       {/* Login Card */}
       <div className="relative z-10 w-full max-w-md bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
-        <h1 className="text-3xl font-bold text-center text-amber-400 mb-6">Sign In</h1>
+        <h1 className="text-3xl font-bold text-center text-amber-400 mb-6">
+          Sign In
+        </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+
           {/* Email */}
           <div className="relative">
             <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400" />
@@ -162,7 +164,7 @@ const Login = () => {
             <button
               type="button"
               onClick={toggleShowPassword}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-400"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-amber-400"
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
@@ -189,6 +191,35 @@ const Login = () => {
           </button>
         </form>
 
+        {/* 🔥 RESTAURANT DROPDOWN (NEW) */}
+        <div className="relative text-center mt-6">
+          <button
+            type="button"
+            onClick={() => setOpenDropdown(p => !p)}
+            className="text-sm text-gray-300 hover:text-amber-400 transition"
+          >
+            Are you a restaurant owner?
+          </button>
+
+          {openDropdown && (
+            <div className="absolute left-1/2 -translate-x-1/2 mt-3 w-56 bg-gray-900 border border-gray-700 rounded-xl shadow-lg overflow-hidden z-20">
+              <Link
+                to="/restaurant/login"
+                className="block px-4 py-3 text-sm text-gray-200 hover:bg-amber-500 hover:text-black transition"
+              >
+                🍽 Restaurant Login
+              </Link>
+
+              <Link
+                to="/apply-restaurant"
+                className="block px-4 py-3 text-sm text-gray-200 hover:bg-green-500 hover:text-black transition"
+              >
+                📝 Apply as Restaurant
+              </Link>
+            </div>
+          )}
+        </div>
+
         {/* Signup */}
         <div className="text-center mt-6">
           <Link
@@ -198,6 +229,7 @@ const Login = () => {
             <FaUserPlus /> Create New Account
           </Link>
         </div>
+
       </div>
     </div>
   );

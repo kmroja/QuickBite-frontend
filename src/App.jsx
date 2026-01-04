@@ -18,7 +18,7 @@ import UserRestaurantMenu from "./components/OurMenu/UserRestaurantMenu";
 
 /* ================= ADMIN ================= */
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AddItems from "./pages/admin/AddItems/AddItems";
+
 import AddRestaurant from "./pages/admin/restaurants/AddRestaurant";
 import ListRestaurants from "./pages/admin/restaurants/ListRestaurantsAdmin";
 import ListItems from "./pages/admin/ListItems/ListItems";
@@ -153,14 +153,7 @@ function App() {
           }
         />
 
-        <Route
-          path="/admin/add"
-          element={
-            <PrivateRoute role="admin">
-              <AddItems />
-            </PrivateRoute>
-          }
-        />
+        
 
         <Route
           path="/admin/list"
